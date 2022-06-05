@@ -9,7 +9,7 @@ from exotx.models.hestonmodel import HestonModel
 
 
 class Autocallable:
-
+    """Class for modeling an autocallable and pricing it."""
     def __init__(self,
                  notional: int,
                  # observation_dates: List[datetime],

@@ -5,6 +5,7 @@ from exotx.data.marketdata import MarketData
 
 
 class BlackScholesModel:
+    """Class for the Black-Scholes model."""
     def __init__(self,
                  reference_date: ql.Date,
                  calendar: ql.Calendar,
