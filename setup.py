@@ -3,8 +3,12 @@ from setuptools import setup, find_packages
 with open('README.md', 'r', encoding="utf-8", errors='ignore') as fh:
     long_description = fh.read()
 
+version = {}
+with open("exotx/_version.py", encoding="utf-8") as fp:
+    exec(fp.read(), version)
+
 setup(name='exotx',
-      version='0.1.0',
+      version=version['__version__'],
       description='Python library for pricing autocallables',
       author='Sebastien Eveno',
       author_email='sebastien.louis.eveno@gmail.com',
