@@ -17,7 +17,7 @@ class HestonModel:
         self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
         self.bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]
 
-    def calibrate(self, seed: int = None) -> Tuple[ql.HestonProcess, ql.HestonModel]:
+    def calibrate(self, seed: int = 1) -> Tuple[ql.HestonProcess, ql.HestonModel]:
         """Calibrate the Heston model."""
         process, model, engine = self._setup_model()
         helpers, grid_data = self._setup_helpers(engine)
@@ -81,7 +81,7 @@ class HestonModel:
                        day_counter: ql.DayCounter,
                        process: ql.HestonProcess,
                        number_of_paths: int = 10000,
-                       seed: int = None) -> np.ndarray:
+                       seed: int = 1) -> np.ndarray:
         """Generate underlying and volatility paths."""
         dimension = process.factors()
         times = np.array([day_counter.yearFraction(dates[0], d) for d in dates])

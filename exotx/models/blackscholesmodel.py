@@ -36,7 +36,7 @@ class BlackScholesModel:
                        day_counter: ql.DayCounter,
                        process: ql.BlackScholesMertonProcess,
                        number_of_paths: int = 100000,
-                       seed: int = None) -> np.ndarray:
+                       seed: int = 1) -> np.ndarray:
         """Generate underlying and volatility paths."""
         dimension = process.factors()
         times = np.array([day_counter.yearFraction(dates[0], d) for d in dates])

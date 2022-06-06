@@ -57,7 +57,7 @@ class Autocallable:
                               day_counter: ql.DayCounter,
                               market_data: MarketData,
                               model: str,
-                              seed: int = None) -> np.ndarray:
+                              seed: int = 1) -> np.ndarray:
         if model.lower() == 'black-scholes':
             black_scholes_model = BlackScholesModel(reference_date, calendar, market_data)
             process, model = black_scholes_model.setup_model()
@@ -72,7 +72,7 @@ class Autocallable:
 
         return underlying_paths
 
-    def price(self, reference_date: datetime, market_data: MarketData, model: str, seed: int = None):
+    def price(self, reference_date: datetime, market_data: MarketData, model: str, seed: int = 1):
         reference_date = ql.Date().from_date(reference_date)
         ql.Settings.instance().evaluationDate = reference_date
         convention = ql.ModifiedFollowing
