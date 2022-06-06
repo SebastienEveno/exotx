@@ -6,6 +6,7 @@ from exotx.data.marketdata import MarketData
 
 class BlackScholesModel:
     """Class for the Black-Scholes model."""
+
     def __init__(self,
                  reference_date: ql.Date,
                  calendar: ql.Calendar,
@@ -13,16 +14,17 @@ class BlackScholesModel:
         self.reference_date = reference_date
         self.calendar = calendar
         self.market_data = market_data
+        self._day_count = ql.Actual365Fixed()
 
     def setup_model(self) -> Tuple[ql.BlackScholesMertonProcess, ql.AnalyticEuropeanEngine]:
         spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot))
-        flat_ts = self.market_data.yield_ts
-        dividend_yield = self.market_data.dividend_ts
+        flat_ts = self.market_data.get_yield_curve()
+        dividend_yield = self.market_data.get_dividend_curve()
         flat_vol_ts = ql.BlackVolTermStructureHandle(
             ql.BlackConstantVol(self.reference_date,
                                 self.calendar,
                                 self.market_data.black_scholes_volatility,
-                                ql.Actual365Fixed())
+                                self._day_count)
         )
         process = ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)
         engine = ql.AnalyticEuropeanEngine(process)

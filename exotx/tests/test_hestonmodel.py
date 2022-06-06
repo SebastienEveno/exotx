@@ -1,5 +1,6 @@
 import pytest
 import QuantLib as ql
+from datetime import datetime
 from exotx.data.marketdata import MarketData
 from exotx.models.hestonmodel import HestonModel
 
@@ -7,7 +8,7 @@ from exotx.models.hestonmodel import HestonModel
 # Arrange
 @pytest.fixture
 def my_reference_date():
-    return ql.Date(6, 11, 2015)
+    return datetime(2015, 11, 6)
 
 
 @pytest.fixture
@@ -17,15 +18,10 @@ def my_calendar():
 
 @pytest.fixture
 def my_market_data():
-    day_count = ql.Actual365Fixed()
-    reference_date = ql.Date(6, 11, 2015)
+    reference_date = datetime(2015, 11, 6)
     spot = 659.37
     risk_free_rate = 0.01
     dividend_rate = 0.0
-    yield_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, risk_free_rate, day_count))
-    dividend_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, dividend_rate, day_count))
     expiration_dates = [ql.Date(6, 12, 2015), ql.Date(6, 1, 2016), ql.Date(6, 2, 2016),
                         ql.Date(6, 3, 2016), ql.Date(6, 4, 2016), ql.Date(6, 5, 2016),
                         ql.Date(6, 6, 2016), ql.Date(6, 7, 2016), ql.Date(6, 8, 2016),
@@ -34,6 +30,7 @@ def my_market_data():
                         ql.Date(6, 3, 2017), ql.Date(6, 4, 2017), ql.Date(6, 5, 2017),
                         ql.Date(6, 6, 2017), ql.Date(6, 7, 2017), ql.Date(6, 8, 2017),
                         ql.Date(6, 9, 2017), ql.Date(6, 10, 2017), ql.Date(6, 11, 2017)]
+    expiration_dates = [ql_date.to_date() for ql_date in expiration_dates]
     strikes = [527.50, 560.46, 593.43, 626.40, 659.37, 692.34, 725.31, 758.28]
     data = [
         [0.37819, 0.34177, 0.30394, 0.27832, 0.26453, 0.25916, 0.25941, 0.26127],
@@ -66,18 +63,18 @@ def my_market_data():
                       expiration_dates=expiration_dates,
                       strikes=strikes,
                       data=data,
-                      yield_ts=yield_ts,
-                      dividend_ts=dividend_ts)
+                      risk_free_rate=risk_free_rate,
+                      dividend_rate=dividend_rate)
 
 
-def test_heston_model_calibrate(my_reference_date: ql.Date, my_calendar: ql.Calendar, my_market_data: MarketData):
+def test_heston_model_calibrate(my_reference_date: datetime, my_calendar: ql.Calendar, my_market_data: MarketData):
     # based on http://gouthamanbalaraman.com/blog/heston-calibration-scipy-optimize-quantlib-python.html
 
     # Act
-    ql.Settings.instance().evaluationDate = my_reference_date
-    heston_model = HestonModel(my_reference_date, my_calendar, my_market_data)
+    ql.Settings.instance().evaluationDate = ql.Date().from_date(my_reference_date)
+    heston_model = HestonModel(ql.Date().from_date(my_reference_date), my_calendar, my_market_data)
     # set seed for repeatable minimization results
-    seed = 0
+    seed = 125
     process, model = heston_model.calibrate(seed=seed)
     theta, kappa, sigma, rho, v0 = model.params()
 

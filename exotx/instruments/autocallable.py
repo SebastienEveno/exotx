@@ -72,7 +72,8 @@ class Autocallable:
 
         return underlying_paths
 
-    def price(self, reference_date: ql.Date, market_data: MarketData, model: str, seed: int = None):
+    def price(self, reference_date: datetime, market_data: MarketData, model: str, seed: int = None):
+        reference_date = ql.Date().from_date(reference_date)
         ql.Settings.instance().evaluationDate = reference_date
         convention = ql.ModifiedFollowing
         day_counter = ql.Actual365Fixed()
@@ -168,7 +169,7 @@ class Autocallable:
 
                 # conditionally, calculate PV for period payoff, add PV to local accumulator
                 if date > reference_date:
-                    df = market_data.yield_ts.discount(date)
+                    df = market_data.get_yield_curve().discount(date)
                     payoff_present_value += payoff * df
 
             # add path PV to global accumulator

@@ -35,7 +35,8 @@ class HestonModel:
         else:
             theta, kappa, sigma, rho, v0 = self.initial_conditions
 
-        process = ql.HestonProcess(self.market_data.yield_ts, self.market_data.dividend_ts,
+        process = ql.HestonProcess(self.market_data.get_yield_curve(),
+                                   self.market_data.get_dividend_curve(),
                                    ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot)),
                                    v0, kappa, theta, sigma, rho)
         model = ql.HestonModel(process)
@@ -47,7 +48,7 @@ class HestonModel:
                                                                        List[Tuple[ql.Date, float]]]:
         helpers = []
         grid_data = []
-        for i, date in enumerate(self.market_data.expiration_dates):
+        for i, date in enumerate([ql.Date().from_date(date) for date in self.market_data.expiration_dates]):
             for j, strike in enumerate(self.market_data.strikes):
                 t = (date - self.reference_date)
                 p = ql.Period(t, ql.Days)
@@ -55,7 +56,7 @@ class HestonModel:
                 helper = ql.HestonModelHelper(
                     p, self.calendar, self.market_data.spot, strike,
                     ql.QuoteHandle(ql.SimpleQuote(vols)),
-                    self.market_data.yield_ts, self.market_data.dividend_ts)
+                    self.market_data.get_yield_curve(), self.market_data.get_dividend_curve())
                 helper.setPricingEngine(engine)
                 helpers.append(helper)
                 grid_data.append((date, strike))

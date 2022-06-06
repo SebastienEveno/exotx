@@ -1,33 +1,28 @@
 import pytest
 import QuantLib as ql
+from datetime import datetime
 from exotx.data.marketdata import MarketData
 from exotx.instruments.autocallable import Autocallable
-from exotx.models.hestonmodel import HestonModel
 
 
 # Arrange
 @pytest.fixture
 def my_reference_date():
-    return ql.Date(6, 11, 2015)
+    return datetime(2015, 11, 6)
 
 
 @pytest.fixture
 def my_market_data():
-    day_count = ql.Actual365Fixed()
-    reference_date = ql.Date(6, 11, 2015)
+    reference_date = datetime(2015, 11, 6)
     spot = 100.0
     black_scholes_volatility = 0.2
     risk_free_rate = 0.01
     dividend_rate = 0.0
-    yield_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, risk_free_rate, day_count))
-    dividend_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, dividend_rate, day_count))
 
     return MarketData(reference_date=reference_date,
                       spot=spot,
-                      yield_ts=yield_ts,
-                      dividend_ts=dividend_ts,
+                      risk_free_rate=risk_free_rate,
+                      dividend_rate=dividend_rate,
                       black_scholes_volatility=black_scholes_volatility)
 
 
@@ -44,7 +39,7 @@ def my_autocallable():
 
 
 def test_autocallable_black_scholes_price(my_autocallable: Autocallable,
-                                          my_reference_date: ql.Date,
+                                          my_reference_date: datetime,
                                           my_market_data: MarketData):
     # Act
     seed = 125
