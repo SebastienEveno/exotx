@@ -1,28 +1,22 @@
 import pytest
 import QuantLib as ql
+from datetime import datetime
 from exotx.data.marketdata import MarketData
 from exotx.instruments.autocallable import Autocallable
-from exotx.models.hestonmodel import HestonModel
 
 
 # Arrange
 @pytest.fixture
 def my_reference_date():
-    return ql.Date(6, 11, 2015)
+    return datetime(2015, 11, 6)
 
 
 @pytest.fixture
 def my_market_data():
-    day_count = ql.Actual365Fixed()
-    reference_date = ql.Date(6, 11, 2015)
-    # spot = 659.37
+    reference_date = datetime(2015, 11, 6)
     spot = 100.0
     risk_free_rate = 0.01
     dividend_rate = 0.0
-    yield_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, risk_free_rate, day_count))
-    dividend_ts = ql.YieldTermStructureHandle(
-        ql.FlatForward(reference_date, dividend_rate, day_count))
     expiration_dates = [ql.Date(6, 12, 2015), ql.Date(6, 1, 2016), ql.Date(6, 2, 2016),
                         ql.Date(6, 3, 2016), ql.Date(6, 4, 2016), ql.Date(6, 5, 2016),
                         ql.Date(6, 6, 2016), ql.Date(6, 7, 2016), ql.Date(6, 8, 2016),
@@ -31,6 +25,7 @@ def my_market_data():
                         ql.Date(6, 3, 2017), ql.Date(6, 4, 2017), ql.Date(6, 5, 2017),
                         ql.Date(6, 6, 2017), ql.Date(6, 7, 2017), ql.Date(6, 8, 2017),
                         ql.Date(6, 9, 2017), ql.Date(6, 10, 2017), ql.Date(6, 11, 2017)]
+    expiration_dates = [ql_date.to_date() for ql_date in expiration_dates]
     strikes = [70.0, 80.0, 90.0, 100.0, 110.0, 120.0, 130.0, 140.0]
     data = [
         [0.37819, 0.34177, 0.30394, 0.27832, 0.26453, 0.25916, 0.25941, 0.26127],
@@ -60,8 +55,8 @@ def my_market_data():
 
     return MarketData(reference_date=reference_date,
                       spot=spot,
-                      yield_ts=yield_ts,
-                      dividend_ts=dividend_ts,
+                      risk_free_rate=risk_free_rate,
+                      dividend_rate=dividend_rate,
                       expiration_dates=expiration_dates,
                       strikes=strikes,
                       data=data)
@@ -79,11 +74,13 @@ def my_autocallable():
     return Autocallable(notional, strike, autocall_barrier_level, coupon, coupon_barrier_level, protection_barrier_level)
 
 
-def test_autocallable_heston_price(my_autocallable: Autocallable, my_reference_date: ql.Date, my_market_data: MarketData):
+def test_autocallable_heston_price(my_autocallable: Autocallable,
+                                   my_reference_date: datetime,
+                                   my_market_data: MarketData):
     # Act
     seed = 125
     model = 'heston'
     pv = my_autocallable.price(my_reference_date, my_market_data, model, seed)
 
     # Assert
-    assert pv == pytest.approx(101.97414577884945, abs=1e-10)
+    assert pv == pytest.approx(101.9764321842, abs=1e-10)

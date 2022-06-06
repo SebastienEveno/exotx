@@ -72,7 +72,8 @@ class Autocallable:
 
         return underlying_paths
 
-    def price(self, reference_date: ql.Date, market_data: MarketData, model: str, seed: int = None):
+    def price(self, reference_date: datetime, market_data: MarketData, model: str, seed: int = None):
+        reference_date = ql.Date().from_date(reference_date)
         ql.Settings.instance().evaluationDate = reference_date
         convention = ql.ModifiedFollowing
         day_counter = ql.Actual365Fixed()
@@ -125,18 +126,19 @@ class Autocallable:
             has_auto_called = False
 
             # loop through set of coupon dates and index ratios
-            for date, index in zip(coupon_dates, (path / self.strike)):
+            for previous_date, date, index in zip(dates, coupon_dates, path / self.strike):
                 # if autocall event has been triggered, immediate exit from this path
                 if has_auto_called:
                     break
 
                 payoff = 0.0
+                year_fraction = ql.Actual365Fixed().yearFraction(previous_date, date)
                 # payoff calculation at expiration
                 if date == expiration_date:
                     # index is greater or equal to coupon barrier level
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.coupon_barrier_level:
-                        payoff = self.notional * (1 + (self.annual_coupon_value / 2 * (1 + unpaid_coupons * has_memory)))
+                        payoff = self.notional * (1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                     # index is greater or equal to protection barrier level and less than coupon barrier level
                     # pay 100% redemption, no coupon
                     if (index >= self.protection_barrier_level) & (index < self.coupon_barrier_level):
@@ -151,13 +153,13 @@ class Autocallable:
                     # autocall will happen before expiration
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.autocall_barrier_level:
-                        payoff = self.notional * (1 + (self.annual_coupon_value / 2 * (1 + unpaid_coupons * has_memory)))
+                        payoff = self.notional * (1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                         has_auto_called = True
                     # index is greater or equal to coupon barrier level and less than autocall barrier level
                     # autocall will not happen
                     # pay coupon, plus conditionally all unpaid coupons
                     if (index >= self.coupon_barrier_level) & (index < self.autocall_barrier_level):
-                        payoff = self.notional * (self.annual_coupon_value / 2 * (1 + unpaid_coupons * has_memory))
+                        payoff = self.notional * (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
                         unpaid_coupons = 0
                     # index is less than coupon barrier level
                     # autocall will not happen
@@ -168,7 +170,7 @@ class Autocallable:
 
                 # conditionally, calculate PV for period payoff, add PV to local accumulator
                 if date > reference_date:
-                    df = market_data.yield_ts.discount(date)
+                    df = market_data.get_yield_curve().discount(date)
                     payoff_present_value += payoff * df
 
             # add path PV to global accumulator
