@@ -47,4 +47,4 @@ def test_autocallable_black_scholes_price(my_autocallable: Autocallable,
     pv = my_autocallable.price(my_reference_date, my_market_data, model, seed)
 
     # Assert
-    assert pv == pytest.approx(96.1609093840671, abs=1e-10)
+    assert pv == pytest.approx(96.1637481597, abs=1e-10)

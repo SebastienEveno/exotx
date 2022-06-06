@@ -83,4 +83,4 @@ def test_autocallable_heston_price(my_autocallable: Autocallable,
     pv = my_autocallable.price(my_reference_date, my_market_data, model, seed)
 
     # Assert
-    assert pv == pytest.approx(101.97414577884945, abs=1e-10)
+    assert pv == pytest.approx(101.9764321842, abs=1e-10)
