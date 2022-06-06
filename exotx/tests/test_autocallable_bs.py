@@ -44,7 +44,7 @@ def test_autocallable_black_scholes_price(my_autocallable: Autocallable,
     # Act
     seed = 125
     model = 'black-scholes'
-    pv = my_autocallable.price(my_reference_date, my_market_data, model, seed)
+    pv = my_autocallable.price(my_reference_date, my_market_data, model, seed=seed)
 
     # Assert
     assert pv == pytest.approx(96.1637481597, abs=1e-10)
