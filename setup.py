@@ -23,7 +23,8 @@ setup(name='exotx',
           'scipy',
           'matplotlib',
           'plotly>=4.12.0',
-          'quantlib>=1.26'
+          'quantlib>=1.26',
+          'pytest==7.1.3'
       ],
       python_requires='>=3.6, <4',
       classifiers=[
