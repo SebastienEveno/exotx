@@ -1,7 +1,5 @@
 import QuantLib as ql
 import numpy as np
-from typing import List
-from datetime import datetime
 
 from exotx.data.marketdata import MarketData
 from exotx.models.blackscholesmodel import BlackScholesModel
@@ -72,8 +70,8 @@ class Autocallable:
 
         return underlying_paths
 
-    def price(self, reference_date: datetime, market_data: MarketData, model: str, seed: int = 1):
-        reference_date = ql.Date().from_date(reference_date)
+    def price(self, market_data: MarketData, model: str, seed: int = 1):
+        reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = reference_date
         convention = ql.ModifiedFollowing
         day_counter = ql.Actual365Fixed()

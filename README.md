@@ -19,7 +19,7 @@ It is based on [QuantLib](https://www.quantlib.org/), the open-source library fo
 import exotx
 
 notional = 100
-strike = 100.0  # equal to the spot price
+strike = 100.0
 autocall_barrier_level = 1.0  # 100%
 annual_coupon_value = 0.03  # 3.00%
 coupon_barrier_level = 0.75  # 75%
@@ -32,7 +32,7 @@ my_autocallable = exotx.Autocallable(notional, strike, autocall_barrier_level, a
 ```python
 import datetime
 
-reference_date = datetime.datetime(2022, 6, 5)
+reference_date = "2022-06-05"
 spot = 100.0
 risk_free_rate = 0.01
 dividend_rate = 0.0
