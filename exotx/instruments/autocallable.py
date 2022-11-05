@@ -58,7 +58,7 @@ class Autocallable:
                               seed: int = 1) -> np.ndarray:
         if model.lower() == 'black-scholes':
             black_scholes_model = BlackScholesModel(reference_date, calendar, market_data)
-            process, model = black_scholes_model.setup_model()
+            process = black_scholes_model.setup()
             underlying_paths = black_scholes_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
         else:
             # defaults to Heston model
@@ -73,8 +73,10 @@ class Autocallable:
     def price(self, market_data: MarketData, model: str, seed: int = 1):
         reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = reference_date
+
+        # TODO: Set these variables from a StaticData object (class to be defined)
         convention = ql.ModifiedFollowing
-        day_counter = ql.Actual365Fixed()
+        day_counter = market_data.day_count
         calendar = ql.TARGET()
 
         # coupon schedule
@@ -175,5 +177,3 @@ class Autocallable:
             global_pv.append(payoff_present_value)
 
         return np.mean(np.array(global_pv))
-
-

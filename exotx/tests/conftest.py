@@ -1,15 +1,15 @@
 import pytest
 from exotx.data.marketdata import MarketData
-from exotx.instruments.autocallable import Autocallable
 
 
 # Arrange
-@pytest.fixture
+@pytest.fixture()
 def my_market_data():
     reference_date = '2015-11-06'
     spot = 100.0
-    risk_free_rate = 0.01
-    dividend_rate = 0.0
+    black_scholes_volatility = 0.25
+    risk_free_rate = 0.08
+    dividend_rate = 0.04
     expiration_dates = ['2015-12-06', '2016-01-06', '2016-02-06', '2016-03-06', '2016-04-06',
                         '2016-05-06', '2016-06-06', '2016-07-06', '2016-08-06', '2016-09-06',
                         '2016-10-06', '2016-11-06', '2016-12-06', '2017-01-06', '2017-02-06',
@@ -46,29 +46,7 @@ def my_market_data():
                       spot=spot,
                       risk_free_rate=risk_free_rate,
                       dividend_rate=dividend_rate,
+                      black_scholes_volatility=black_scholes_volatility,
                       expiration_dates=expiration_dates,
                       strikes=strikes,
                       data=data)
-
-
-@pytest.fixture
-def my_autocallable():
-    notional = 100
-    strike = 100
-    autocall_barrier_level = 1.0
-    coupon = 0.03
-    coupon_barrier_level = 0.75
-    protection_barrier_level = 0.75
-
-    return Autocallable(notional, strike, autocall_barrier_level, coupon, coupon_barrier_level, protection_barrier_level)
-
-
-def test_autocallable_heston_price(my_autocallable: Autocallable,
-                                   my_market_data: MarketData):
-    # Act
-    seed = 125
-    model = 'heston'
-    pv = my_autocallable.price(my_market_data, model, seed)
-
-    # Assert
-    assert pv == pytest.approx(101.94274054345938, abs=1e-10)
