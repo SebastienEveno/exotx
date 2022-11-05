@@ -6,7 +6,7 @@ from exotx.instruments.autocallable import Autocallable
 # Arrange
 @pytest.fixture
 def my_market_data():
-    reference_date = "2015-11-06"
+    reference_date = '2015-11-06'
     spot = 100.0
     black_scholes_volatility = 0.2
     risk_free_rate = 0.01
@@ -39,4 +39,4 @@ def test_autocallable_black_scholes_price(my_autocallable: Autocallable,
     pv = my_autocallable.price(my_market_data, model, seed)
 
     # Assert
-    assert pv == pytest.approx(96.1637481597, abs=1e-10)
+    assert pv == pytest.approx(96.08517973497098, abs=1e-10)

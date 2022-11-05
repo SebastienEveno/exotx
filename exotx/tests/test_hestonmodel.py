@@ -7,30 +7,21 @@ from exotx.models.hestonmodel import HestonModel
 
 # Arrange
 @pytest.fixture
-def my_reference_date():
-    return datetime(2015, 11, 6)
-
-
-@pytest.fixture
 def my_calendar():
     return ql.UnitedStates()
 
 
 @pytest.fixture
 def my_market_data():
-    reference_date = datetime(2015, 11, 6)
+    reference_date = '2015-11-06'
     spot = 659.37
     risk_free_rate = 0.01
     dividend_rate = 0.0
-    expiration_dates = [ql.Date(6, 12, 2015), ql.Date(6, 1, 2016), ql.Date(6, 2, 2016),
-                        ql.Date(6, 3, 2016), ql.Date(6, 4, 2016), ql.Date(6, 5, 2016),
-                        ql.Date(6, 6, 2016), ql.Date(6, 7, 2016), ql.Date(6, 8, 2016),
-                        ql.Date(6, 9, 2016), ql.Date(6, 10, 2016), ql.Date(6, 11, 2016),
-                        ql.Date(6, 12, 2016), ql.Date(6, 1, 2017), ql.Date(6, 2, 2017),
-                        ql.Date(6, 3, 2017), ql.Date(6, 4, 2017), ql.Date(6, 5, 2017),
-                        ql.Date(6, 6, 2017), ql.Date(6, 7, 2017), ql.Date(6, 8, 2017),
-                        ql.Date(6, 9, 2017), ql.Date(6, 10, 2017), ql.Date(6, 11, 2017)]
-    expiration_dates = [ql_date.to_date() for ql_date in expiration_dates]
+    expiration_dates = ['2015-12-06', '2016-01-06', '2016-02-06', '2016-03-06', '2016-04-06',
+                        '2016-05-06', '2016-06-06', '2016-07-06', '2016-08-06', '2016-09-06',
+                        '2016-10-06', '2016-11-06', '2016-12-06', '2017-01-06', '2017-02-06',
+                        '2017-03-06', '2017-04-06', '2017-05-06', '2017-06-06', '2017-07-06',
+                        '2017-08-06', '2017-09-06', '2017-10-06', '2017-11-06']
     strikes = [527.50, 560.46, 593.43, 626.40, 659.37, 692.34, 725.31, 758.28]
     data = [
         [0.37819, 0.34177, 0.30394, 0.27832, 0.26453, 0.25916, 0.25941, 0.26127],
@@ -67,21 +58,21 @@ def my_market_data():
                       dividend_rate=dividend_rate)
 
 
-def test_heston_model_calibrate(my_reference_date: datetime, my_calendar: ql.Calendar, my_market_data: MarketData):
+def test_heston_model_calibrate(my_calendar: ql.Calendar, my_market_data: MarketData):
     # based on http://gouthamanbalaraman.com/blog/heston-calibration-scipy-optimize-quantlib-python.html
 
     # Act
-    ql.Settings.instance().evaluationDate = ql.Date().from_date(my_reference_date)
-    heston_model = HestonModel(ql.Date().from_date(my_reference_date), my_calendar, my_market_data)
+    ql_reference_date = my_market_data.reference_date
+    ql.Settings.instance().evaluationDate = ql_reference_date
+    heston_model = HestonModel(ql_reference_date, my_calendar, my_market_data)
     # set seed for repeatable minimization results
     seed = 125
     process, model = heston_model.calibrate(seed=seed)
     theta, kappa, sigma, rho, v0 = model.params()
 
     # Assert
-    assert theta == pytest.approx(0.1221096831, abs=1e-10)
-    assert kappa == pytest.approx(5.5055428470, abs=1e-10)
-    assert sigma == pytest.approx(0.9934494224, abs=1e-10)
-    assert rho == pytest.approx(-0.59017278054, abs=1e-10)
-    assert v0 == pytest.approx(0.0797631833665, abs=1e-10)
-
+    assert theta == pytest.approx(0.1230488192, abs=1e-10)
+    assert kappa == pytest.approx(5.0871479578, abs=1e-10)
+    assert sigma == pytest.approx(0.9764083761, abs=1e-10)
+    assert rho == pytest.approx(-0.58773215478, abs=1e-10)
+    assert v0 == pytest.approx(0.0801189418321, abs=1e-10)

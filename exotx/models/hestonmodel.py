@@ -12,24 +12,29 @@ class HestonModel:
                  calendar: ql.Calendar,
                  market_data: MarketData) -> None:
         self.reference_date = reference_date
+        # TODO: Define calendar in a StaticData object
         self.calendar = calendar
         self.market_data = market_data
         self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
         self.bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]
 
+        # set pricing engine
+        self.pricing_engine = ql.AnalyticHestonEngine
+
     def calibrate(self, seed: int = 1) -> Tuple[ql.HestonProcess, ql.HestonModel]:
         """Calibrate the Heston model."""
-        process, model, engine = self._setup_model()
-        helpers, grid_data = self._setup_helpers(engine)
+        process, model = self._setup()
+        # set the engine
+        ql_engine = self.pricing_engine(model)
+        helpers, grid_data = self._setup_helpers(ql_engine)
         cost_function = self._cost_function_generator(model, helpers, norm=True)
         differential_evolution(cost_function, self.bounds, seed=seed, maxiter=100)
         print('Calibrated Heston parameters:', model.params())
 
         return process, model
 
-    def _setup_model(self, initial_conditions: Tuple[float, ...] = None) -> Tuple[ql.HestonProcess,
-                                                                                  ql.HestonModel,
-                                                                                  ql.AnalyticHestonEngine]:
+    def _setup(self, initial_conditions: Tuple[float, ...] = None) -> Tuple[ql.HestonProcess,
+                                                                            ql.HestonModel]:
         if initial_conditions:
             theta, kappa, sigma, rho, v0 = initial_conditions
         else:
@@ -40,12 +45,11 @@ class HestonModel:
                                    ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot)),
                                    v0, kappa, theta, sigma, rho)
         model = ql.HestonModel(process)
-        engine = ql.AnalyticHestonEngine(model)
 
-        return process, model, engine
+        return process, model
 
-    def _setup_helpers(self, engine: ql.AnalyticHestonEngine) -> Tuple[List[ql.HestonModelHelper],
-                                                                       List[Tuple[ql.Date, float]]]:
+    def _setup_helpers(self, engine: ql.PricingEngine) -> Tuple[List[ql.HestonModelHelper],
+                                                                List[Tuple[ql.Date, float]]]:
         helpers = []
         grid_data = []
         for i, date in enumerate([ql.Date().from_date(date) for date in self.market_data.expiration_dates]):

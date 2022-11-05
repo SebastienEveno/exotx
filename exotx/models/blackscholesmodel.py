@@ -1,6 +1,5 @@
 import QuantLib as ql
 import numpy as np
-from typing import List, Tuple
 from exotx.data.marketdata import MarketData
 
 
@@ -14,9 +13,10 @@ class BlackScholesModel:
         self.reference_date = reference_date
         self.calendar = calendar
         self.market_data = market_data
-        self._day_count = ql.Actual365Fixed()
+        # TODO: Define day count in StaticData instead
+        self._day_count = market_data.day_count
 
-    def setup_model(self) -> Tuple[ql.BlackScholesMertonProcess, ql.AnalyticEuropeanEngine]:
+    def setup(self) -> ql.BlackScholesMertonProcess:
         spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot))
         flat_ts = self.market_data.get_yield_curve()
         dividend_yield = self.market_data.get_dividend_curve()
@@ -27,9 +27,8 @@ class BlackScholesModel:
                                 self._day_count)
         )
         process = ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)
-        engine = ql.AnalyticEuropeanEngine(process)
 
-        return process, engine
+        return process
 
     @staticmethod
     def generate_paths(dates,
