@@ -32,7 +32,7 @@ my_autocallable = exotx.Autocallable(notional, strike, autocall_barrier_level, a
 ```python
 import datetime
 
-reference_date = "2022-06-05"
+reference_date = '2015-11-06'
 spot = 100.0
 risk_free_rate = 0.01
 dividend_rate = 0.0
@@ -43,8 +43,8 @@ my_market_data = exotx.MarketData(reference_date, spot, risk_free_rate, dividend
 
 ### Price the product
 ```python
-my_autocallable.price(reference_date, my_market_data, model='black-scholes')
+my_autocallable.price(my_market_data, model='black-scholes')
 ```
 ```plaintext
-96.15395623462899
+96.08517973497098
 ```
