@@ -147,7 +147,7 @@ calendars = {
     },
     'Ukraine': {
         'USE': ql.Ukraine(ql.Ukraine.USE),
-        'default': ql.Ukraine
+        'default': ql.Ukraine()
     },
     'UnitedKingdom': {
         'Exchange': ql.UnitedKingdom(ql.UnitedKingdom.Exchange),
