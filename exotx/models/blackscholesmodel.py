@@ -8,10 +8,9 @@ class BlackScholesModel:
     """Class for the Black-Scholes model."""
 
     def __init__(self,
-                 reference_date: ql.Date,
                  market_data: MarketData,
                  static_data: StaticData) -> None:
-        self.reference_date = reference_date
+        self.reference_date = market_data.reference_date
         self.market_data = market_data
         # set static data
         self.calendar = static_data.calendar

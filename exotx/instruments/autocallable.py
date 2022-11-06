@@ -50,8 +50,7 @@ class Autocallable:
         self.has_memory = has_memory
 
     @staticmethod
-    def _get_underlying_paths(reference_date: ql.Date,
-                              dates: np.ndarray,
+    def _get_underlying_paths(dates: np.ndarray,
                               market_data: MarketData,
                               static_data: StaticData,
                               model: str,
@@ -60,13 +59,13 @@ class Autocallable:
         day_counter = static_data.day_counter
 
         if model.lower() == 'black-scholes':
-            black_scholes_model = BlackScholesModel(reference_date, market_data, static_data)
+            black_scholes_model = BlackScholesModel(market_data, static_data)
             process = black_scholes_model.setup()
             underlying_paths = black_scholes_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
         else:
             # defaults to Heston model
             # create and calibrate the heston model based on market data
-            heston_model = HestonModel(reference_date, market_data, static_data)
+            heston_model = HestonModel(market_data, static_data)
             process, model = heston_model.calibrate(seed=seed)
             # generate paths for a given set of dates, exclude the current spot rate
             underlying_paths = heston_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
@@ -104,7 +103,7 @@ class Autocallable:
         dates = np.hstack((np.array([reference_date]), coupon_dates[coupon_dates > reference_date]))
 
         # get underlying paths
-        paths = self._get_underlying_paths(reference_date, dates, market_data, static_data, model, seed)
+        paths = self._get_underlying_paths(dates, market_data, static_data, model, seed)
 
         # identify the past coupon dates
         past_coupon_dates = coupon_dates[coupon_dates <= reference_date]

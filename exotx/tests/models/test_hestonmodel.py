@@ -1,5 +1,4 @@
 import pytest
-import QuantLib as ql
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 from exotx.models.hestonmodel import HestonModel
@@ -62,9 +61,7 @@ def test_heston_model_calibrate(my_market_data: MarketData, my_static_data: Stat
     # based on http://gouthamanbalaraman.com/blog/heston-calibration-scipy-optimize-quantlib-python.html
 
     # Act
-    ql_reference_date = my_market_data.reference_date
-    ql.Settings.instance().evaluationDate = ql_reference_date
-    heston_model = HestonModel(ql_reference_date, my_market_data, my_static_data)
+    heston_model = HestonModel(my_market_data, my_static_data)
     # set seed for repeatable minimization results
     seed = 125
     process, model = heston_model.calibrate(seed=seed)

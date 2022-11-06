@@ -9,10 +9,10 @@ from exotx.data.staticdata import StaticData
 class HestonModel:
     """Class for the Heston model."""
     def __init__(self,
-                 reference_date: ql.Date,
                  market_data: MarketData,
                  static_data: StaticData) -> None:
-        self.reference_date = reference_date
+        self.reference_date = market_data.reference_date
+        ql.Settings.instance().evaluationDate = self.reference_date
         self.calendar = static_data.calendar
         self.market_data = market_data
         self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)

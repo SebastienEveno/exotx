@@ -86,19 +86,19 @@ class BarrierOption:
         engine = BarrierOptionEngine(model)
 
         if engine == BarrierOptionEngine.ANALYTICBARRIERENGINE:
-            bs_model = BlackScholesModel(self.reference_date, market_data, static_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.AnalyticBarrierEngine(process)
         elif engine == BarrierOptionEngine.FDBLACKSCHOLESBARRIERENGINE:
-            bs_model = BlackScholesModel(self.reference_date, market_data, static_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.FdBlackScholesBarrierEngine(process)
         elif engine == BarrierOptionEngine.FDBLACKSCHOLESREBATEENGINE:
-            bs_model = BlackScholesModel(self.reference_date, market_data, static_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.FdBlackScholesRebateEngine(process)
         elif engine == BarrierOptionEngine.FDHESTONBARRIERENGINE:
-            heston_model = HestonModel(self.reference_date, market_data, static_data)
+            heston_model = HestonModel(market_data, static_data)
             process, model = heston_model.calibrate()
             return ql.FdHestonBarrierEngine(model)
         else:
