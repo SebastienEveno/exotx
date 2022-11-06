@@ -20,7 +20,7 @@ class StaticData(object):
 
     def _set_day_counter(self, day_counter: Optional[str]) -> None:
         if day_counter:
-            assert day_counter in list(day_counters.keys()), "Invalid day counter"
+            assert day_counter in list(day_counters.keys()), f"Invalid day counter \'{day_counter}\'"
             self.day_counter: ql.DayCounter = day_counters[day_counter]
         else:
             # set default day counter
@@ -35,16 +35,16 @@ class StaticData(object):
 
     def _set_calendar(self, calendar: Optional[str], market: Optional[str]) -> None:
         if calendar:
-            assert calendar in list(calendars.keys()), f"Invalid calendar {calendar}"
+            assert calendar in list(calendars.keys()), f"Invalid calendar \'{calendar}\'"
             if market:
-                assert market in list(calendars[calendar].keys()), f"Invalid market {market} for calendar {calendar}"
+                assert market in list(calendars[calendar].keys()), f"Invalid market \'{market}\' for calendar \'{calendar}\'"
                 self.calendar: ql.Calendar = calendars[calendar][market]
             else:
                 # set calendar with default market
                 self.calendar: ql.Calendar = calendars[calendar][self.default_market_name]
         else:
             if market:
-                raise Exception(f"Missing calendar for market {market}")
+                raise Exception(f"Missing calendar for market \'{market}\'")
             else:
                 # set default calendar
                 self.calendar: ql.Calendar = self.get_default_calendar()
