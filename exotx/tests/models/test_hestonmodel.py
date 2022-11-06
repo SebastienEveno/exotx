@@ -1,18 +1,17 @@
 import pytest
-import QuantLib as ql
-from datetime import datetime
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 from exotx.models.hestonmodel import HestonModel
 
 
 # Arrange
 @pytest.fixture
-def my_calendar():
-    return ql.UnitedStates()
+def my_static_data() -> StaticData:
+    return StaticData(calendar='UnitedStates')
 
 
 @pytest.fixture
-def my_market_data():
+def my_market_data() -> MarketData:
     reference_date = '2015-11-06'
     spot = 659.37
     risk_free_rate = 0.01
@@ -58,13 +57,11 @@ def my_market_data():
                       dividend_rate=dividend_rate)
 
 
-def test_heston_model_calibrate(my_calendar: ql.Calendar, my_market_data: MarketData):
+def test_heston_model_calibrate(my_market_data: MarketData, my_static_data: StaticData) -> None:
     # based on http://gouthamanbalaraman.com/blog/heston-calibration-scipy-optimize-quantlib-python.html
 
     # Act
-    ql_reference_date = my_market_data.reference_date
-    ql.Settings.instance().evaluationDate = ql_reference_date
-    heston_model = HestonModel(ql_reference_date, my_calendar, my_market_data)
+    heston_model = HestonModel(my_market_data, my_static_data)
     # set seed for repeatable minimization results
     seed = 125
     process, model = heston_model.calibrate(seed=seed)

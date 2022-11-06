@@ -19,6 +19,9 @@ class MarketData(object):
             reference_date = ql.Date().from_date(datetime.strptime(reference_date, "%Y-%m-%d"))
         elif isinstance(reference_date, datetime):
             reference_date = ql.Date().from_date(reference_date)
+        else:
+            # defaults to today's date
+            reference_date = ql.Date_todaysDate()
         self.reference_date = reference_date
 
         # set the spot underlying value
@@ -26,8 +29,8 @@ class MarketData(object):
         self.spot = spot
 
         # TODO: define this in a StaticData object instead
-        # set day count
-        self.day_count = ql.Actual360()
+        # set day counter
+        self.day_counter = ql.Actual360()
 
         # set market rate curves
         self.risk_free_rate = risk_free_rate
@@ -48,9 +51,9 @@ class MarketData(object):
         self.black_scholes_volatility = black_scholes_volatility
 
     def get_yield_curve(self) -> ql.YieldTermStructureHandle:
-        flat_forward = ql.FlatForward(self.reference_date, self.risk_free_rate, self.day_count)
+        flat_forward = ql.FlatForward(self.reference_date, self.risk_free_rate, self.day_counter)
         return ql.YieldTermStructureHandle(flat_forward)
 
     def get_dividend_curve(self) -> ql.YieldTermStructureHandle:
-        flat_forward = ql.FlatForward(self.reference_date, self.dividend_rate, self.day_count)
+        flat_forward = ql.FlatForward(self.reference_date, self.dividend_rate, self.day_counter)
         return ql.YieldTermStructureHandle(flat_forward)

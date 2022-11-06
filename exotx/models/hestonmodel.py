@@ -3,17 +3,17 @@ import numpy as np
 from scipy.optimize import differential_evolution
 from typing import List, Tuple
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 
 
 class HestonModel:
     """Class for the Heston model."""
     def __init__(self,
-                 reference_date: ql.Date,
-                 calendar: ql.Calendar,
-                 market_data: MarketData) -> None:
-        self.reference_date = reference_date
-        # TODO: Define calendar in a StaticData object
-        self.calendar = calendar
+                 market_data: MarketData,
+                 static_data: StaticData) -> None:
+        self.reference_date = market_data.reference_date
+        ql.Settings.instance().evaluationDate = self.reference_date
+        self.calendar = static_data.calendar
         self.market_data = market_data
         self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
         self.bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]

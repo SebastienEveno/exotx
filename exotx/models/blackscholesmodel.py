@@ -1,20 +1,20 @@
 import QuantLib as ql
 import numpy as np
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 
 
 class BlackScholesModel:
     """Class for the Black-Scholes model."""
 
     def __init__(self,
-                 reference_date: ql.Date,
-                 calendar: ql.Calendar,
-                 market_data: MarketData) -> None:
-        self.reference_date = reference_date
-        self.calendar = calendar
+                 market_data: MarketData,
+                 static_data: StaticData) -> None:
+        self.reference_date = market_data.reference_date
         self.market_data = market_data
-        # TODO: Define day count in StaticData instead
-        self._day_count = market_data.day_count
+        # set static data
+        self.calendar = static_data.calendar
+        self._day_counter = static_data.day_counter
 
     def setup(self) -> ql.BlackScholesMertonProcess:
         spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot))
@@ -24,7 +24,7 @@ class BlackScholesModel:
             ql.BlackConstantVol(self.reference_date,
                                 self.calendar,
                                 self.market_data.black_scholes_volatility,
-                                self._day_count)
+                                self._day_counter)
         )
         process = ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)
 

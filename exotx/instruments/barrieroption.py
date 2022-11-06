@@ -3,6 +3,7 @@ import QuantLib as ql
 from datetime import datetime
 from enum import Enum
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.models.hestonmodel import HestonModel
 
@@ -51,11 +52,10 @@ class BarrierOption:
         self.reference_date = ql.Date().todaysDate()
         self.model = None
 
-    def price(self, market_data: MarketData, model: str):
+    def price(self, market_data: MarketData, static_data: StaticData, model: str):
         if market_data.reference_date:
             self.reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = self.reference_date
-        calendar = ql.TARGET()
 
         # create product
         ql_barrier_type = self._get_ql_barrier_type()
@@ -64,7 +64,7 @@ class BarrierOption:
         ql_option = ql.BarrierOption(ql_barrier_type, self.barrier, self.rebate, ql_payoff, ql_exercise)
 
         # set pricing engine
-        ql_pricing_engine = self._get_ql_pricing_engine(calendar, market_data, model)
+        ql_pricing_engine = self._get_ql_pricing_engine(market_data, static_data, model)
         ql_option.setPricingEngine(ql_pricing_engine)
 
         return ql_option.NPV()
@@ -79,25 +79,26 @@ class BarrierOption:
         else:
             return ql.Barrier.DownOut
 
-    def _get_ql_pricing_engine(self, calendar: ql.Calendar, market_data: MarketData, model: str):
+    def _get_ql_pricing_engine(self, market_data: MarketData, static_data: StaticData,
+                               model: str):
         model = model.lower()
         assert model in [engine.value for engine in BarrierOptionEngine]
         engine = BarrierOptionEngine(model)
 
         if engine == BarrierOptionEngine.ANALYTICBARRIERENGINE:
-            bs_model = BlackScholesModel(self.reference_date, calendar, market_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.AnalyticBarrierEngine(process)
         elif engine == BarrierOptionEngine.FDBLACKSCHOLESBARRIERENGINE:
-            bs_model = BlackScholesModel(self.reference_date, calendar, market_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.FdBlackScholesBarrierEngine(process)
         elif engine == BarrierOptionEngine.FDBLACKSCHOLESREBATEENGINE:
-            bs_model = BlackScholesModel(self.reference_date, calendar, market_data)
+            bs_model = BlackScholesModel(market_data, static_data)
             process = bs_model.setup()
             return ql.FdBlackScholesRebateEngine(process)
         elif engine == BarrierOptionEngine.FDHESTONBARRIERENGINE:
-            heston_model = HestonModel(self.reference_date, calendar, market_data)
+            heston_model = HestonModel(market_data, static_data)
             process, model = heston_model.calibrate()
             return ql.FdHestonBarrierEngine(model)
         else:
