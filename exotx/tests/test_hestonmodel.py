@@ -1,6 +1,5 @@
 import pytest
 import QuantLib as ql
-from datetime import datetime
 from exotx.data.marketdata import MarketData
 from exotx.models.hestonmodel import HestonModel
 
