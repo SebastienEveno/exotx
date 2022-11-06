@@ -1,10 +1,16 @@
 import pytest
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 
 
 # Arrange
 @pytest.fixture()
-def my_market_data():
+def my_static_data() -> StaticData:
+    return StaticData()
+
+
+@pytest.fixture()
+def my_market_data() -> MarketData:
     reference_date = '2015-11-06'
     spot = 100.0
     black_scholes_volatility = 0.25

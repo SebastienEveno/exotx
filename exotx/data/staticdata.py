@@ -2,16 +2,19 @@ import QuantLib as ql
 from typing import Optional
 from exotx.data.static.daycounters import day_counters
 from exotx.data.static.calendars import calendars
+from exotx.data.static.conventions import business_day_conventions
 
 
 class StaticData(object):
     def __init__(self,
                  day_counter: Optional[str] = None,
                  calendar: Optional[str] = None,
-                 market: Optional[str] = None) -> None:
+                 market: Optional[str] = None,
+                 business_day_convention: Optional[str] = None) -> None:
         self.default_market_name = 'default'
         self._set_day_counter(day_counter)
         self._set_calendar(calendar, market)
+        self._set_business_day_convention(business_day_convention)
 
     # region Day counter
     @staticmethod
@@ -48,5 +51,19 @@ class StaticData(object):
             else:
                 # set default calendar
                 self.calendar: ql.Calendar = self.get_default_calendar()
+
+    # endregion
+
+    # region Business day convention
+    @staticmethod
+    def get_default_business_day_convention() -> int:
+        return ql.ModifiedFollowing
+
+    def _set_business_day_convention(self, business_day_convention: Optional[str]) -> None:
+        if business_day_convention:
+            assert business_day_convention in list(business_day_conventions.keys()), f"Invalid weekday correction \'{business_day_convention}\'"
+            self.business_day_convention: int = business_day_conventions[business_day_convention]
+        else:
+            self.business_day_convention: int = ql.ModifiedFollowing
 
     # endregion

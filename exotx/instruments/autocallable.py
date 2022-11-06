@@ -2,6 +2,7 @@ import QuantLib as ql
 import numpy as np
 
 from exotx.data.marketdata import MarketData
+from exotx.data.staticdata import StaticData
 from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.models.hestonmodel import HestonModel
 
@@ -51,40 +52,40 @@ class Autocallable:
     @staticmethod
     def _get_underlying_paths(reference_date: ql.Date,
                               dates: np.ndarray,
-                              calendar: ql.Calendar,
-                              day_counter: ql.DayCounter,
                               market_data: MarketData,
+                              static_data: StaticData,
                               model: str,
                               seed: int = 1) -> np.ndarray:
+        # set static data
+        day_counter = static_data.day_counter
+
         if model.lower() == 'black-scholes':
-            black_scholes_model = BlackScholesModel(reference_date, calendar, market_data)
+            black_scholes_model = BlackScholesModel(reference_date, market_data, static_data)
             process = black_scholes_model.setup()
             underlying_paths = black_scholes_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
         else:
             # defaults to Heston model
             # create and calibrate the heston model based on market data
-            heston_model = HestonModel(reference_date, calendar, market_data)
+            heston_model = HestonModel(reference_date, market_data, static_data)
             process, model = heston_model.calibrate(seed=seed)
             # generate paths for a given set of dates, exclude the current spot rate
             underlying_paths = heston_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
 
         return underlying_paths
 
-    def price(self, market_data: MarketData, model: str, seed: int = 1):
+    def price(self, market_data: MarketData, static_data: StaticData, model: str, seed: int = 1):
         reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = reference_date
 
-        # TODO: Set these variables from a StaticData object (class to be defined)
-        convention = ql.ModifiedFollowing
-        day_counter = market_data.day_count
-        calendar = ql.TARGET()
+        business_day_convention = static_data.business_day_convention
+        calendar = static_data.calendar
 
         # coupon schedule
         start_date = reference_date
         first_coupon_date = calendar.advance(start_date, ql.Period(6, ql.Months))
         last_coupon_date = calendar.advance(start_date, ql.Period(3, ql.Years))
         coupon_dates = np.array(list(ql.Schedule(first_coupon_date, last_coupon_date, ql.Period(ql.Semiannual),
-                                                 calendar, convention, convention,
+                                                 calendar, business_day_convention, business_day_convention,
                                                  ql.DateGeneration.Forward, False)))
         # create past fixings into dictionary
         past_fixings = {}
@@ -103,7 +104,7 @@ class Autocallable:
         dates = np.hstack((np.array([reference_date]), coupon_dates[coupon_dates > reference_date]))
 
         # get underlying paths
-        paths = self._get_underlying_paths(reference_date, dates, calendar, day_counter, market_data, model, seed)
+        paths = self._get_underlying_paths(reference_date, dates, market_data, static_data, model, seed)
 
         # identify the past coupon dates
         past_coupon_dates = coupon_dates[coupon_dates <= reference_date]

@@ -15,6 +15,11 @@ def my_default_calendar_type() -> type:
     return type(my_default_calendar)
 
 
+def my_default_business_day_convention_type() -> type:
+    my_default_business_day_convention = StaticData.get_default_business_day_convention()
+    return type(my_default_business_day_convention)
+
+
 @pytest.mark.parametrize('day_counter, expected_parent_class_type, expected_class_type', [
                              ('Actual360', ql.DayCounter, ql.Actual360),
                              ('SimpleDayCounter', ql.DayCounter, ql.SimpleDayCounter),
@@ -38,6 +43,7 @@ def test_static_data_day_counter(day_counter: Optional[str],
 
     # default settings
     assert isinstance(my_static_data.calendar, my_default_calendar_type())
+    assert isinstance(my_static_data.business_day_convention, my_default_business_day_convention_type())
 
 
 @pytest.mark.parametrize('day_counter', [
@@ -187,6 +193,7 @@ def test_static_data_calendar_ok(calendar: Optional[str], market: Optional[str],
 
     # default settings
     assert isinstance(my_static_data.day_counter, my_default_day_counter_type())
+    assert isinstance(my_static_data.business_day_convention, my_default_business_day_convention_type())
 
 
 @pytest.mark.parametrize('calendar, market', [
