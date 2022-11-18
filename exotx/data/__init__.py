@@ -1,9 +1,10 @@
 """Modules for working with market and static data."""
 
 from exotx.data.marketdata import MarketData
-from exotx.data.staticdata import StaticData
+from exotx.data.staticdata import StaticData, StaticDataSchema
 
 __all__ = [
     'MarketData',
-    'StaticData'
+    'StaticData',
+    'StaticDataSchema'
 ]
