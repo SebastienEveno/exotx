@@ -1,5 +1,6 @@
 # exotx
 <p align="center">
+    <img src="https://github.com/SebastienEveno/exotx/actions/workflows/python-package.yml/badge.svg" />
     <a href="https://pypi.org/project/exotx" alt="Python Versions">
         <img src="https://img.shields.io/pypi/pyversions/exotx.svg?logo=python&logoColor=white" /></a>
     <a href="https://pypi.org/project/exotx" alt="PyPi">
