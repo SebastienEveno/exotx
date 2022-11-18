@@ -43,7 +43,7 @@ def test_barrier_option_analytic_barrier_engine(my_barrier_option: BarrierOption
     pv = my_barrier_option.price(my_market_data, my_static_data, model)
 
     # Assert
-    assert pv == pytest.approx(expected, abs=1e-10)
+    assert pv == pytest.approx(expected, abs=1e-8)
 
 
 def test_barrier_option_fd_black_scholes_rebate_engine(my_barrier_option: BarrierOption,
@@ -67,4 +67,4 @@ def test_barrier_option_fd_heston_barrier_engine_constant_vol(my_barrier_option:
     pv = my_barrier_option.price(my_market_data, my_static_data, model)
 
     # Assert
-    assert pv == pytest.approx(14.114219673481117, abs=1e-10)
+    assert pv == pytest.approx(14.114219673481117, abs=1e-8)
