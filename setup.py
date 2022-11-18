@@ -24,9 +24,9 @@ setup(name='exotx',
           'matplotlib',
           'plotly>=4.12.0',
           'quantlib>=1.26',
-          'pytest==7.1.3'
+          'pytest>=7.1.3'
       ],
-      python_requires='>=3.6, <4',
+      python_requires='>=3.10.2, <4',
       classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
