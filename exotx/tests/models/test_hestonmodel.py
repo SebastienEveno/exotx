@@ -68,8 +68,8 @@ def test_heston_model_calibrate(my_market_data: MarketData, my_static_data: Stat
     theta, kappa, sigma, rho, v0 = model.params()
 
     # Assert
-    assert theta == pytest.approx(0.1230488192, abs=1e-10)
-    assert kappa == pytest.approx(5.0871479578, abs=1e-10)
-    assert sigma == pytest.approx(0.9764083761, abs=1e-10)
-    assert rho == pytest.approx(-0.58773215478, abs=1e-10)
-    assert v0 == pytest.approx(0.0801189418321, abs=1e-10)
+    assert theta == pytest.approx(0.1230488192, abs=1e-8)
+    assert kappa == pytest.approx(5.0871479578, abs=1e-8)
+    assert sigma == pytest.approx(0.9764083761, abs=1e-8)
+    assert rho == pytest.approx(-0.58773215478, abs=1e-8)
+    assert v0 == pytest.approx(0.0801189418321, abs=1e-8)
