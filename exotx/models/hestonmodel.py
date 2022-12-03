@@ -11,24 +11,25 @@ class HestonModel:
     def __init__(self,
                  market_data: MarketData,
                  static_data: StaticData) -> None:
-        self.reference_date = market_data.reference_date
-        ql.Settings.instance().evaluationDate = self.reference_date
-        self.calendar: ql.Calendar = static_data.get_ql_calendar()
+        self._reference_date: ql.Date = market_data.get_ql_reference_date()
+        ql.Settings.instance().evaluationDate = self._reference_date
+        self._calendar: ql.Calendar = static_data.get_ql_calendar()
+        self._day_counter: ql.DayCounter = static_data.get_ql_day_counter()
         self.market_data = market_data
-        self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
-        self.bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]
+        self._initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
+        self._bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]
 
         # set pricing engine
-        self.pricing_engine = ql.AnalyticHestonEngine
+        self._pricing_engine = ql.AnalyticHestonEngine
 
     def calibrate(self, seed: int = 1) -> Tuple[ql.HestonProcess, ql.HestonModel]:
         """Calibrate the Heston model."""
         process, model = self._setup()
         # set the engine
-        ql_engine = self.pricing_engine(model)
+        ql_engine = self._pricing_engine(model)
         helpers, grid_data = self._setup_helpers(ql_engine)
         cost_function = self._cost_function_generator(model, helpers, norm=True)
-        differential_evolution(cost_function, self.bounds, seed=seed, maxiter=100)
+        differential_evolution(cost_function, self._bounds, seed=seed, maxiter=100)
         print('Calibrated Heston parameters:', model.params())
 
         return process, model
@@ -38,10 +39,10 @@ class HestonModel:
         if initial_conditions:
             theta, kappa, sigma, rho, v0 = initial_conditions
         else:
-            theta, kappa, sigma, rho, v0 = self.initial_conditions
+            theta, kappa, sigma, rho, v0 = self._initial_conditions
 
-        process = ql.HestonProcess(self.market_data.get_yield_curve(),
-                                   self.market_data.get_dividend_curve(),
+        process = ql.HestonProcess(self.market_data.get_yield_curve(self._day_counter),
+                                   self.market_data.get_dividend_curve(self._day_counter),
                                    ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot)),
                                    v0, kappa, theta, sigma, rho)
         model = ql.HestonModel(process)
@@ -54,13 +55,13 @@ class HestonModel:
         grid_data = []
         for i, date in enumerate([ql.Date().from_date(date) for date in self.market_data.expiration_dates]):
             for j, strike in enumerate(self.market_data.strikes):
-                t = (date - self.reference_date)
+                t = (date - self._reference_date)
                 p = ql.Period(t, ql.Days)
                 vols = self.market_data.data[i][j]
                 helper = ql.HestonModelHelper(
-                    p, self.calendar, self.market_data.spot, strike,
+                    p, self._calendar, self.market_data.spot, strike,
                     ql.QuoteHandle(ql.SimpleQuote(vols)),
-                    self.market_data.get_yield_curve(), self.market_data.get_dividend_curve())
+                    self.market_data.get_yield_curve(self._day_counter), self.market_data.get_dividend_curve(self._day_counter))
                 helper.setPricingEngine(engine)
                 helpers.append(helper)
                 grid_data.append((date, strike))

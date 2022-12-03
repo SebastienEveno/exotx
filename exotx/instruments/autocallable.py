@@ -73,11 +73,12 @@ class Autocallable:
         return underlying_paths
 
     def price(self, market_data: MarketData, static_data: StaticData, model: str, seed: int = 1):
-        reference_date = market_data.reference_date
+        reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = reference_date
 
         business_day_convention = static_data.get_default_ql_business_day_convention()
         calendar = static_data.get_ql_calendar()
+        day_counter = static_data.get_ql_day_counter()
 
         # coupon schedule
         start_date = reference_date
@@ -170,7 +171,7 @@ class Autocallable:
 
                 # conditionally, calculate PV for period payoff, add PV to local accumulator
                 if date > reference_date:
-                    df = market_data.get_yield_curve().discount(date)
+                    df = market_data.get_yield_curve(day_counter).discount(date)
                     payoff_present_value += payoff * df
 
             # add path PV to global accumulator
