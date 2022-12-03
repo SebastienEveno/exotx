@@ -31,8 +31,19 @@ my_autocallable = exotx.Autocallable(notional, strike, autocall_barrier_level, a
 
 ### Define the static data
 The object that represents static data such as the calendar, the day counter or the business day convention used.
+
+#### From the constructor
 ```python
-my_static_data = exotx.StaticData()
+my_static_data = exotx.StaticData(day_counter='Actual360', business_day_convention='ModifiedFollowing')
+```
+
+#### From JSON
+```python
+my_json = {
+        'day_counter': 'Actual360',
+        'business_day_convention': 'ModifiedFollowing'
+}
+my_static_data = StaticData.from_json(my_json)
 ```
 
 ### Define the market data
