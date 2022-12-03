@@ -34,6 +34,7 @@ class BarrierOptionEngine(Enum):
 
 class BarrierOption:
     """Class for modeling a barrier option."""
+
     def __init__(self,
                  barrier_type: str,
                  barrier: float,

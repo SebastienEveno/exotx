@@ -8,6 +8,7 @@ from exotx.data.staticdata import StaticData
 
 class HestonModel:
     """Class for the Heston model."""
+
     def __init__(self,
                  market_data: MarketData,
                  static_data: StaticData) -> None:
@@ -35,7 +36,7 @@ class HestonModel:
         return process, model
 
     def _setup(self, initial_conditions: Tuple[float, ...] = None) -> Tuple[ql.HestonProcess,
-                                                                            ql.HestonModel]:
+    ql.HestonModel]:
         if initial_conditions:
             theta, kappa, sigma, rho, v0 = initial_conditions
         else:
@@ -50,7 +51,7 @@ class HestonModel:
         return process, model
 
     def _setup_helpers(self, engine: ql.PricingEngine) -> Tuple[List[ql.HestonModelHelper],
-                                                                List[Tuple[ql.Date, float]]]:
+    List[Tuple[ql.Date, float]]]:
         helpers = []
         grid_data = []
         for i, date in enumerate([ql.Date().from_date(date) for date in self.market_data.expiration_dates]):
@@ -61,7 +62,8 @@ class HestonModel:
                 helper = ql.HestonModelHelper(
                     p, self._calendar, self.market_data.spot, strike,
                     ql.QuoteHandle(ql.SimpleQuote(vols)),
-                    self.market_data.get_yield_curve(self._day_counter), self.market_data.get_dividend_curve(self._day_counter))
+                    self.market_data.get_yield_curve(self._day_counter),
+                    self.market_data.get_dividend_curve(self._day_counter))
                 helper.setPricingEngine(engine)
                 helpers.append(helper)
                 grid_data.append((date, strike))

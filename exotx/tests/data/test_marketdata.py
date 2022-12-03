@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from exotx.data.marketdata import MarketData
 
 
