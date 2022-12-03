@@ -13,7 +13,7 @@ class HestonModel:
                  static_data: StaticData) -> None:
         self.reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = self.reference_date
-        self.calendar = static_data.calendar
+        self.calendar: ql.Calendar = static_data.get_ql_calendar()
         self.market_data = market_data
         self.initial_conditions = (0.02, 0.2, 0.5, 0.1, 0.01)
         self.bounds = [(0, 1.), (0.01, 15), (0.01, 1.), (-1, 1), (0, 1.)]

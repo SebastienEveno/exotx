@@ -18,13 +18,14 @@ setup(name='exotx',
       license='MIT',
       packages=find_packages(),
       install_requires=[
-          'numpy>=1.16.5',
-          'pandas',
-          'scipy',
+          'numpy>=1.23.5',
+          'pandas>=1.5.1',
+          'scipy>=1.9.3',
           'matplotlib',
           'plotly>=4.12.0',
           'quantlib>=1.26',
-          'pytest>=7.1.3'
+          'pytest>=7.1.3',
+          'marshmallow>=3.19.0'
       ],
       python_requires='>=3.10.2, <4',
       classifiers=[

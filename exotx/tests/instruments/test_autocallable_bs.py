@@ -29,7 +29,8 @@ def my_autocallable() -> Autocallable:
     coupon_barrier_level = 0.75
     protection_barrier_level = 0.75
 
-    return Autocallable(notional, strike, autocall_barrier_level, coupon, coupon_barrier_level, protection_barrier_level)
+    return Autocallable(notional, strike, autocall_barrier_level, coupon, coupon_barrier_level,
+                        protection_barrier_level)
 
 
 def test_autocallable_black_scholes_price(my_autocallable: Autocallable,
