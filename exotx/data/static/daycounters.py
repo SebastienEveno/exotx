@@ -1,6 +1,7 @@
 import enum
 import QuantLib as ql
 
+
 # based on https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#daycounter
 
 

@@ -1,6 +1,7 @@
 import enum
 import QuantLib as ql
 
+
 # based on https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#conventions
 
 
@@ -20,6 +21,8 @@ compoundings = {
     'SimpleThenCompounded': ql.SimpleThenCompounded,
     'CompoundedThenSimple': ql.CompoundedThenSimple
 }
+
+
 # endregion
 
 
@@ -53,6 +56,8 @@ frequencies = {
     'Weekly': ql.Weekly,
     'Daily': ql.Daily
 }
+
+
 # endregion
 
 

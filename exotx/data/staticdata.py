@@ -1,8 +1,9 @@
+import json
 import QuantLib as ql
-from typing import Optional, Union
+from typing import Union
 from exotx.data.static.daycounters import day_counters_to_ql, DayCounter
 from exotx.data.static.calendar import Calendar, CalendarSchema
-from exotx.data.static.calendars import calendars
+from exotx.data.static.calendars import calendars_to_ql_calendars
 from exotx.data.static.conventions import business_day_conventions_to_ql, BusinessDayConvention
 from marshmallow import Schema, fields, post_load, ValidationError
 
@@ -20,9 +21,6 @@ class StaticData:
 
         # calendar
         self._set_calendar(calendar)
-        # self.calendar = calendar
-        # if calendar:
-        #     self._set_calendar(calendar['region'], calendar['market'])
 
     # region Day counter
     @staticmethod
@@ -34,14 +32,11 @@ class StaticData:
             self.day_counter = day_counter
         elif isinstance(day_counter, str):
             try:
-                if day_counter:
-                    self.day_counter = DayCounter[day_counter]
-                    # self.day_counter: ql.DayCounter = day_counters_to_ql[day_counter]
-                else:
-                    # set default day counter
-                    self.day_counter: DayCounter = self.get_default_day_counter()
+                self.day_counter = DayCounter[day_counter]
             except KeyError as err:
                 raise ValueError(f"Invalid day counter \'{day_counter}\'") from err
+        elif day_counter is None:
+            self.day_counter: DayCounter = self.get_default_day_counter()
         else:
             raise ValueError(f"Invalid day counter type {type(day_counter)}")
 
@@ -56,7 +51,7 @@ class StaticData:
 
     # region Calendar
     @staticmethod
-    def _get_default_calendar() -> Calendar:
+    def get_default_calendar() -> Calendar:
         return Calendar.get_default_calendar()
 
     @staticmethod
@@ -66,7 +61,7 @@ class StaticData:
     def get_ql_calendar(self) -> ql.Calendar:
         if self.calendar.region:
             # TODO: Make sure market is defined as CalendarMarket.Settlement here if market was None
-            return calendars[self.calendar.region][self.calendar.market]
+            return calendars_to_ql_calendars[self.calendar.region][self.calendar.market]
         else:
             return self.get_ql_default_calendar()
 
@@ -76,20 +71,23 @@ class StaticData:
         elif isinstance(value, dict):
             if 'region' in value.keys():
                 region = value['region']
-                assert region in list(calendars.keys()), f"Invalid region \'{region}\'"
+                assert region in list(calendars_to_ql_calendars.keys()), f"Invalid region \'{region}\'"
                 if 'market' in value.keys():
                     market = value['market']
-                    assert market in list(calendars[region].keys()), f"Invalid market \'{market}\' for region \'{region}\'"
-                    self.calendar: Calendar(region=region, market=market)
+                    assert market in list(calendars_to_ql_calendars[
+                                              region].keys()), f"Invalid market \'{market}\' for region \'{region}\'"
+                    self.calendar = Calendar(region=region, market=market)
                 else:
                     # set calendar with default market
-                    self.calendar: Calendar(region=region, market=None)
+                    self.calendar = Calendar(region=region, market=None)
             else:
                 if 'market' in value.keys():
                     raise Exception(f"Missing calendar for market \'{value['market']}\'")
                 else:
                     # set default calendar
-                    self.calendar = self._get_default_calendar()
+                    self.calendar = self.get_default_calendar()
+        elif value is None:
+            self.calendar = self.get_default_calendar()
         else:
             raise ValueError(f"Invalid calendar type {type(value)}")
 
@@ -99,19 +97,20 @@ class StaticData:
     @staticmethod
     def get_default_business_day_convention() -> BusinessDayConvention:
         return BusinessDayConvention.ModifiedFollowing
-        # return ql.ModifiedFollowing
+
+    def get_default_ql_business_day_convention(self) -> int:
+        return business_day_conventions_to_ql[self.business_day_convention]
 
     def _set_business_day_convention(self, value: Union[BusinessDayConvention, str, None]) -> None:
         if isinstance(value, BusinessDayConvention):
             self.business_day_convention = value
         elif isinstance(value, str):
             try:
-                if value:
-                    self.business_day_convention = BusinessDayConvention[value]
-                else:
-                    self.business_day_convention = self.get_default_business_day_convention()
+                self.business_day_convention = BusinessDayConvention[value]
             except KeyError as err:
-                raise ValueError(f"Invalid business day convention \'{value}\'")
+                raise ValueError(f"Invalid business day convention \'{value}\'") from err
+        elif value is None:
+            self.business_day_convention = self.get_default_business_day_convention()
         else:
             raise ValueError(f"Invalid business day convention type {type(value)}")
 
@@ -122,42 +121,20 @@ class StaticData:
         schema = StaticDataSchema()
         return schema.load(data)
 
-    # def to_json(self):
-    #     schema = StaticDataSchema()
-    #     return schema.dump(self)
-
-
-# class CalendarField(fields.Field):
-#     # def _serialize(self, value, attr, obj, **kwargs):
-#     #     if value is None:
-#     #         return None
-#     #     return dict(Region=value['region'], market=value['market'])
-#
-#     def _deserialize(self, value, attr, data, **kwargs):
-#         if value:
-#             if value['region']:
-#                 region = value['region']
-#                 if region not in list(calendars.keys()):
-#                     raise ValidationError("Invalid region \'{region}\'")
-#                 if value['market']:
-#                     market = value['market']
-#                     if market not in list(calendars[region].keys()):
-#                         raise ValidationError("Invalid market \'{market}\' for region \'{region}\'")
-#                     return calendars[region][market]
-#                 else:
-#                     # set calendar with default market
-#                     return calendars[region]['Default']
-#             else:
-#                 if value['market']:
-#                     raise ValidationError(f"Missing region for market \'{value['market']}\'")
-#                 return StaticData.get_default_calendar()
-#         # default value
-#         return StaticData.get_default_calendar()
+    def to_json(self, format_type: str = "dict"):
+        schema = StaticDataSchema()
+        my_json = schema.dump(self)
+        if format_type == "dict":
+            return my_json
+        elif format_type == "str":
+            return json.dumps(my_json)
+        else:
+            raise NotImplemented(f"Invalid format type {format_type} when dumping")
 
 
 class BusinessDayConventionField(fields.Field):
-    # def _serialize(self, value: BusinessDayConvention, attr, obj, **kwargs) -> str:
-    #     return value.name
+    def _serialize(self, value: BusinessDayConvention, attr, obj, **kwargs) -> str:
+        return value.name
 
     def _deserialize(self, value: str, attr, data, **kwargs) -> BusinessDayConvention:
         try:
@@ -170,8 +147,8 @@ class BusinessDayConventionField(fields.Field):
 
 
 class DayCounterField(fields.Field):
-    # def _serialize(self, value: DayCounter, attr, obj, **kwargs) -> str:
-    #     return value.name
+    def _serialize(self, value: DayCounter, attr, obj, **kwargs) -> str:
+        return value.name
 
     def _deserialize(self, value: str, attr, data, **kwargs) -> DayCounter:
         try:

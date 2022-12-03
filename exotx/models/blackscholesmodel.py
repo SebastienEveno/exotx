@@ -13,8 +13,8 @@ class BlackScholesModel:
         self.reference_date = market_data.reference_date
         self.market_data = market_data
         # set static data
-        self.calendar = static_data.calendar
-        self._day_counter = static_data.day_counter
+        self.calendar: ql.Calendar = static_data.get_ql_calendar()
+        self._day_counter: ql.DayCounter = static_data.get_ql_day_counter()
 
     def setup(self) -> ql.BlackScholesMertonProcess:
         spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot))

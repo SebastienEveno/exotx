@@ -2,13 +2,14 @@ import enum
 
 import QuantLib as ql
 
+
 # based on https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#calendar
 
 
 class CalendarRegion(enum.Enum):
     Argentina = 0
     Australia = 1
-    BespokeCalendar = 2  # TODO: to be removed?
+    BespokeCalendar = 2
     Brazil = 3
     Canada = 4
     China = 5
@@ -28,7 +29,7 @@ class CalendarRegion(enum.Enum):
     Mexico = 19
     NewZealand = 20
     Norway = 21
-    NullCalendar = 22  # TODO: to be removed?
+    NullCalendar = 22
     Poland = 23
     Romania = 24
     Russia = 25
@@ -40,12 +41,13 @@ class CalendarRegion(enum.Enum):
     Sweden = 31
     Switzerland = 32
     Taiwan = 33
-    Thailand = 34
-    Turkey = 35
-    Ukraine = 36
-    UnitedKingdom = 37
-    UnitedStates = 38
-    WeekendsOnly = 39  # TODO: to be removed?
+    TARGET = 34
+    Thailand = 35
+    Turkey = 36
+    Ukraine = 37
+    UnitedKingdom = 38
+    UnitedStates = 39
+    WeekendsOnly = 40
 
 
 class CalendarMarket(enum.Enum):
@@ -208,6 +210,9 @@ region_to_markets = {
         CalendarMarket.Settlement,
         CalendarMarket.TSEC
     ],
+    CalendarRegion.TARGET: [
+        CalendarMarket.Settlement
+    ],
     CalendarRegion.Thailand: [
         CalendarMarket.Settlement
     ],
@@ -236,7 +241,9 @@ region_to_markets = {
     ]
 }
 
-calendars = {
+available_regions = [region.name for region in CalendarRegion]
+
+calendars_to_ql_calendars = {
     CalendarRegion.Argentina: {
         CalendarMarket.Merval: ql.Argentina(ql.Argentina.Merval),
         CalendarMarket.Settlement: ql.Argentina()
@@ -244,162 +251,152 @@ calendars = {
     CalendarRegion.Australia: {
         CalendarMarket.Settlement: ql.Australia()
     },
-    'BespokeCalendar': {
-        'Default': ql.BespokeCalendar('BespokeCalendar')
+    CalendarRegion.BespokeCalendar: {
+        CalendarMarket.Settlement: ql.BespokeCalendar('BespokeCalendar')
     },
-    'Brazil': {
-        'Exchange': ql.Brazil(ql.Brazil.Exchange),
-        'Settlement': ql.Brazil(ql.Brazil.Settlement),
-        'Default': ql.Brazil()
+    CalendarRegion.Brazil: {
+        CalendarMarket.Exchange: ql.Brazil(ql.Brazil.Exchange),
+        CalendarMarket.Settlement: ql.Brazil(ql.Brazil.Settlement)
     },
-    'Canada': {
-        'Settlement': ql.Canada(ql.Canada.Settlement),
-        'TSX': ql.Canada(ql.Canada.TSX),
-        'Default': ql.Canada()
+    CalendarRegion.Canada: {
+        CalendarMarket.Settlement: ql.Canada(ql.Canada.Settlement),
+        CalendarMarket.TSX: ql.Canada(ql.Canada.TSX)
     },
-    'China': {
-        'IB': ql.China(ql.China.IB),
-        'SSE': ql.China(ql.China.SSE),
-        'Default': ql.China()
+    CalendarRegion.China: {
+        CalendarMarket.IB: ql.China(ql.China.IB),
+        CalendarMarket.SSE: ql.China(ql.China.SSE),
+        CalendarMarket.Settlement: ql.China()
     },
-    'CzechRepublic': {
-        'PSE': ql.CzechRepublic(ql.CzechRepublic.PSE),
-        'Default': ql.CzechRepublic()
+    CalendarRegion.CzechRepublic: {
+        CalendarMarket.PSE: ql.CzechRepublic(ql.CzechRepublic.PSE),
+        CalendarMarket.Settlement: ql.CzechRepublic()
     },
-    'Denmark': {
-        'Default': ql.Denmark()
+    CalendarRegion.Denmark: {
+        CalendarMarket.Settlement: ql.Denmark()
     },
-    'Finland': {
-        'Default': ql.Finland()
+    CalendarRegion.Finland: {
+        CalendarMarket.Settlement: ql.Finland()
     },
-    'France': {
-        'Exchange': ql.France(ql.France.Exchange),
-        'Settlement': ql.France(ql.France.Settlement),
-        'Default': ql.France()
+    CalendarRegion.France: {
+        CalendarMarket.Exchange: ql.France(ql.France.Exchange),
+        CalendarMarket.Settlement: ql.France(ql.France.Settlement)
     },
-    'Germany': {
-        'Eurex': ql.Germany(ql.Germany.Eurex),
-        'FrankfurtStockExchange': ql.Germany(ql.Germany.FrankfurtStockExchange),
-        'Settlement': ql.Germany(ql.Germany.Settlement),
-        'Xetra': ql.Germany(ql.Germany.Xetra),
-        'Default': ql.Germany()
+    CalendarRegion.Germany: {
+        CalendarMarket.Eurex: ql.Germany(ql.Germany.Eurex),
+        CalendarMarket.FrankfurtStockExchange: ql.Germany(ql.Germany.FrankfurtStockExchange),
+        CalendarMarket.Settlement: ql.Germany(ql.Germany.Settlement),
+        CalendarMarket.Xetra: ql.Germany(ql.Germany.Xetra)
     },
-    'HongKong': {
-        'HKEx': ql.HongKong(ql.HongKong.HKEx),
-        'Default': ql.HongKong()
+    CalendarRegion.HongKong: {
+        CalendarMarket.HKEx: ql.HongKong(ql.HongKong.HKEx),
+        CalendarMarket.Settlement: ql.HongKong()
     },
-    'Hungary': {
-        'Default': ql.Hungary()
+    CalendarRegion.Hungary: {
+        CalendarMarket.Settlement: ql.Hungary()
     },
-    'Iceland': {
-        'ICEX': ql.Iceland(ql.Iceland.ICEX),
-        'Default': ql.Iceland()
+    CalendarRegion.Iceland: {
+        CalendarMarket.ICEX: ql.Iceland(ql.Iceland.ICEX),
+        CalendarMarket.Settlement: ql.Iceland()
     },
-    'India': {
-        'NSE': ql.India(ql.India.NSE),
-        'Default': ql.India()
+    CalendarRegion.India: {
+        CalendarMarket.NSE: ql.India(ql.India.NSE),
+        CalendarMarket.Settlement: ql.India()
     },
-    'Indonesia': {
-        'BEJ': ql.Indonesia(ql.Indonesia.BEJ),
-        'JSX': ql.Indonesia(ql.Indonesia.JSX),
-        'Default': ql.Indonesia()
+    CalendarRegion.Indonesia: {
+        CalendarMarket.BEJ: ql.Indonesia(ql.Indonesia.BEJ),
+        CalendarMarket.JSX: ql.Indonesia(ql.Indonesia.JSX),
+        CalendarMarket.Settlement: ql.Indonesia()
     },
-    'Israel': {
-        'Settlement': ql.Israel(ql.Israel.Settlement),
-        'TASE': ql.Israel(ql.Israel.TASE),
-        'Default': ql.Israel()
+    CalendarRegion.Israel: {
+        CalendarMarket.Settlement: ql.Israel(ql.Israel.Settlement),
+        CalendarMarket.TASE: ql.Israel(ql.Israel.TASE)
     },
-    'Italy': {
-        'Exchange': ql.Italy(ql.Italy.Exchange),
-        'Settlement': ql.Italy(ql.Italy.Settlement),
-        'Default': ql.Italy()
+    CalendarRegion.Italy: {
+        CalendarMarket.Exchange: ql.Italy(ql.Italy.Exchange),
+        CalendarMarket.Settlement: ql.Italy(ql.Italy.Settlement)
     },
-    'Japan': {
-        'Default': ql.Japan()
+    CalendarRegion.Japan: {
+        CalendarMarket.Settlement: ql.Japan()
     },
-    'Mexico': {
-        'BMV': ql.Mexico(ql.Mexico.BMV),
-        'Default': ql.Mexico()
+    CalendarRegion.Mexico: {
+        CalendarMarket.BMV: ql.Mexico(ql.Mexico.BMV),
+        CalendarMarket.Settlement: ql.Mexico()
     },
-    'NewZealand': {
-        'Default': ql.NewZealand()
+    CalendarRegion.NewZealand: {
+        CalendarMarket.Settlement: ql.NewZealand()
     },
-    'Norway': {
-        'Default': ql.Norway()
+    CalendarRegion.Norway: {
+        CalendarMarket.Settlement: ql.Norway()
     },
-    'NullCalendar': {
-        'Default': ql.NullCalendar()
+    CalendarRegion.NullCalendar: {
+        CalendarMarket.Settlement: ql.NullCalendar()
     },
-    'Poland': {
-        'Default': ql.Poland()
+    CalendarRegion.Poland: {
+        CalendarMarket.Settlement: ql.Poland()
     },
-    'Romania': {
-        'Default': ql.Romania()
+    CalendarRegion.Romania: {
+        CalendarMarket.Settlement: ql.Romania()
     },
-    'Russia': {
-        'MOEX': ql.Russia(ql.Russia.MOEX),
-        'Settlement': ql.Russia(ql.Russia.Settlement),
-        'Default': ql.Russia()
+    CalendarRegion.Russia: {
+        CalendarMarket.MOEX: ql.Russia(ql.Russia.MOEX),
+        CalendarMarket.Settlement: ql.Russia(ql.Russia.Settlement)
     },
-    'SaudiArabia': {
-        'Tadawul': ql.SaudiArabia(ql.SaudiArabia.Tadawul),
-        'Default': ql.SaudiArabia()
+    CalendarRegion.SaudiArabia: {
+        CalendarMarket.Tadawul: ql.SaudiArabia(ql.SaudiArabia.Tadawul),
+        CalendarMarket.Settlement: ql.SaudiArabia()
     },
-    'Singapore': {
-        'SGX': ql.Singapore(ql.Singapore.SGX),
-        'Default': ql.Singapore()
+    CalendarRegion.Singapore: {
+        CalendarMarket.SGX: ql.Singapore(ql.Singapore.SGX),
+        CalendarMarket.Settlement: ql.Singapore()
     },
-    'Slovakia': {
-        'BSSE': ql.Slovakia(ql.Slovakia.BSSE),
-        'Default': ql.Slovakia()
+    CalendarRegion.Slovakia: {
+        CalendarMarket.BSSE: ql.Slovakia(ql.Slovakia.BSSE),
+        CalendarMarket.Settlement: ql.Slovakia()
     },
-    'SouthAfrica': {
-        'Default': ql.SouthAfrica()
+    CalendarRegion.SouthAfrica: {
+        CalendarMarket.Settlement: ql.SouthAfrica()
     },
-    'SouthKorea': {
-        'KRX': ql.SouthKorea(ql.SouthKorea.KRX),
-        'Settlement': ql.SouthKorea(ql.SouthKorea.Settlement),
-        'Default': ql.SouthKorea()
+    CalendarRegion.SouthKorea: {
+        CalendarMarket.KRX: ql.SouthKorea(ql.SouthKorea.KRX),
+        CalendarMarket.Settlement: ql.SouthKorea(ql.SouthKorea.Settlement)
     },
-    'Sweden': {
-        'Default': ql.Sweden()
+    CalendarRegion.Sweden: {
+        CalendarMarket.Settlement: ql.Sweden()
     },
-    'Switzerland': {
-        'Default': ql.Switzerland()
+    CalendarRegion.Switzerland: {
+        CalendarMarket.Settlement: ql.Switzerland()
     },
-    'Taiwan': {
-        'TSEC': ql.Taiwan(ql.Taiwan.TSEC),
-        'Default': ql.Taiwan()
+    CalendarRegion.Taiwan: {
+        CalendarMarket.TSEC: ql.Taiwan(ql.Taiwan.TSEC),
+        CalendarMarket.Settlement: ql.Taiwan()
     },
-    'TARGET': {
-        'Default': ql.TARGET()
+    CalendarRegion.TARGET: {
+        CalendarMarket.Settlement: ql.TARGET()
     },
-    'Thailand': {
-        'Default': ql.Thailand()
+    CalendarRegion.Thailand: {
+        CalendarMarket.Settlement: ql.Thailand()
     },
-    'Turkey': {
-        'Default': ql.Turkey()
+    CalendarRegion.Turkey: {
+        CalendarMarket.Settlement: ql.Turkey()
     },
-    'Ukraine': {
-        'USE': ql.Ukraine(ql.Ukraine.USE),
-        'Default': ql.Ukraine()
+    CalendarRegion.Ukraine: {
+        CalendarMarket.USE: ql.Ukraine(ql.Ukraine.USE),
+        CalendarMarket.Settlement: ql.Ukraine()
     },
-    'UnitedKingdom': {
-        'Exchange': ql.UnitedKingdom(ql.UnitedKingdom.Exchange),
-        'Metals': ql.UnitedKingdom(ql.UnitedKingdom.Metals),
-        'Settlement': ql.UnitedKingdom(ql.UnitedKingdom.Settlement),
-        'Default': ql.UnitedKingdom()
+    CalendarRegion.UnitedKingdom: {
+        CalendarMarket.Exchange: ql.UnitedKingdom(ql.UnitedKingdom.Exchange),
+        CalendarMarket.Metals: ql.UnitedKingdom(ql.UnitedKingdom.Metals),
+        CalendarMarket.Settlement: ql.UnitedKingdom(ql.UnitedKingdom.Settlement)
     },
-    'UnitedStates': {
-        'FederalReserve': ql.UnitedStates(ql.UnitedStates.FederalReserve),
-        'GovernmentBond': ql.UnitedStates(ql.UnitedStates.GovernmentBond),
-        'LiborImpact': ql.UnitedStates(ql.UnitedStates.LiborImpact),
-        'NERC': ql.UnitedStates(ql.UnitedStates.NERC),
-        'NYSE': ql.UnitedStates(ql.UnitedStates.NYSE),
-        'Settlement': ql.UnitedStates(ql.UnitedStates.Settlement),
-        'Default': ql.UnitedStates()
+    CalendarRegion.UnitedStates: {
+        CalendarMarket.FederalReserve: ql.UnitedStates(ql.UnitedStates.FederalReserve),
+        CalendarMarket.GovernmentBond: ql.UnitedStates(ql.UnitedStates.GovernmentBond),
+        CalendarMarket.LiborImpact: ql.UnitedStates(ql.UnitedStates.LiborImpact),
+        CalendarMarket.NERC: ql.UnitedStates(ql.UnitedStates.NERC),
+        CalendarMarket.NYSE: ql.UnitedStates(ql.UnitedStates.NYSE),
+        CalendarMarket.Settlement: ql.UnitedStates(ql.UnitedStates.Settlement)
     },
-    'WeekendsOnly': {
-        'Default': ql.WeekendsOnly()
+    CalendarRegion.WeekendsOnly: {
+        CalendarMarket.Settlement: ql.WeekendsOnly()
     }
 }

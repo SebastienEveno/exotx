@@ -56,7 +56,7 @@ class Autocallable:
                               model: str,
                               seed: int = 1) -> np.ndarray:
         # set static data
-        day_counter = static_data.day_counter
+        day_counter = static_data.get_ql_day_counter()
 
         if model.lower() == 'black-scholes':
             black_scholes_model = BlackScholesModel(market_data, static_data)
@@ -76,8 +76,8 @@ class Autocallable:
         reference_date = market_data.reference_date
         ql.Settings.instance().evaluationDate = reference_date
 
-        business_day_convention = static_data.business_day_convention
-        calendar = static_data.calendar
+        business_day_convention = static_data.get_default_ql_business_day_convention()
+        calendar = static_data.get_ql_calendar()
 
         # coupon schedule
         start_date = reference_date

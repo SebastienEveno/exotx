@@ -110,7 +110,7 @@ def test_calendar_from_json_invalid_region(region: Optional[str], market: Option
                            f'Brazil, Canada, China, CzechRepublic, Denmark, Finland, France, Germany, HongKong, ' \
                            f'Hungary, Iceland, India, Indonesia, Israel, Italy, Japan, Mexico, NewZealand, Norway, ' \
                            f'NullCalendar, Poland, Romania, Russia, SaudiArabia, Singapore, Slovakia, SouthAfrica, ' \
-                           f'SouthKorea, Sweden, Switzerland, Taiwan, Thailand, Turkey, Ukraine, UnitedKingdom, ' \
+                           f'SouthKorea, Sweden, Switzerland, Taiwan, TARGET, Thailand, Turkey, Ukraine, UnitedKingdom, ' \
                            f'UnitedStates, WeekendsOnly'
 
 
@@ -131,5 +131,35 @@ def test_calendar_from_json_invalid_market_for_region(region: Optional[str], mar
     # Assert
     assert str(e.value) == f'Invalid market \'{market}\' for region \'{region}\'. Available markets: Settlement, ' \
                            f'FederalReserve, GovernmentBond, LiborImpact, NERC, NYSE'
+
+
+# endregion
+
+
+# region to_json
+@pytest.mark.parametrize('region, market', [
+    ('UnitedStates', 'NYSE'),
+    (CalendarRegion.UnitedStates, CalendarMarket.NYSE),
+    (CalendarRegion.UnitedStates, None)
+])
+def test_calendar_to_json(region: Union[CalendarRegion, str, None], market: Union[CalendarMarket, str, None]):
+    # Arrange
+    my_calendar = Calendar(region=region, market=market)
+
+    # Act
+    my_json = my_calendar.to_json()
+
+    # Assert
+    if isinstance(region, str):
+        assert my_json['region'] == region
+    elif isinstance(region, CalendarRegion):
+        assert my_json['region'] == region.name
+    if market is None:
+        assert my_json['market'] == 'Settlement'
+    else:
+        if isinstance(market, str):
+            assert my_json['market'] == market
+        elif isinstance(market, CalendarMarket):
+            assert my_json['market'] == market.name
 
 # endregion
