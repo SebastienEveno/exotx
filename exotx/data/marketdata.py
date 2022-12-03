@@ -96,7 +96,7 @@ class MarketDataSchema(Schema):
     risk_free_rate = fields.Float(required=True)
     dividend_rate = fields.Float(required=True)
     reference_date = fields.DateTime(format='%Y-%m-%d', allow_none=True)
-    expiration_dates = fields.List(fields.DateTime(), allow_none=True)
+    expiration_dates = fields.List(fields.DateTime(format='%Y-%m-%d'), allow_none=True)
     strikes = fields.List(fields.Float(), allow_none=True)
     data = fields.List(fields.List(fields.Float), allow_none=True)
     black_scholes_volatility = fields.Float(allow_none=True)
