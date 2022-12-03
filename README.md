@@ -47,6 +47,7 @@ my_static_data = exotx.StaticData.from_json(my_json)
 ```
 
 ### Define the market data
+#### From the constructor
 ```python
 reference_date = '2015-11-06'
 spot = 100.0
@@ -55,6 +56,17 @@ dividend_rate = 0.0
 black_scholes_volatility = 0.2
 
 my_market_data = exotx.MarketData(reference_date, spot, risk_free_rate, dividend_rate, black_scholes_volatility=black_scholes_volatility)
+```
+#### From JSON
+```python
+my_json = {
+    'reference_date': '2015-11-06',
+    'spot': 100,
+    'risk_free_rate': 0.01,
+    'dividend_rate': 0,
+    'black_scholes_volatility': 0.2
+}
+my_market_data = exotx.MarketData.from_json(my_json)
 ```
 
 ### Price the product
