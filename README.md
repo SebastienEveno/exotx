@@ -43,7 +43,7 @@ my_json = {
         'day_counter': 'Actual360',
         'business_day_convention': 'ModifiedFollowing'
 }
-my_static_data = StaticData.from_json(my_json)
+my_static_data = exotx.StaticData.from_json(my_json)
 ```
 
 ### Define the market data
