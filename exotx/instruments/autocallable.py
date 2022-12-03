@@ -9,6 +9,7 @@ from exotx.models.hestonmodel import HestonModel
 
 class Autocallable:
     """Class for modeling an autocallable and pricing it."""
+
     def __init__(self,
                  notional: int,
                  # observation_dates: List[datetime],
@@ -73,11 +74,12 @@ class Autocallable:
         return underlying_paths
 
     def price(self, market_data: MarketData, static_data: StaticData, model: str, seed: int = 1):
-        reference_date = market_data.reference_date
+        reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = reference_date
 
         business_day_convention = static_data.get_default_ql_business_day_convention()
         calendar = static_data.get_ql_calendar()
+        day_counter = static_data.get_ql_day_counter()
 
         # coupon schedule
         start_date = reference_date
@@ -138,7 +140,8 @@ class Autocallable:
                     # index is greater or equal to coupon barrier level
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.coupon_barrier_level:
-                        payoff = self.notional * (1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                        payoff = self.notional * (
+                                    1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                     # index is greater or equal to protection barrier level and less than coupon barrier level
                     # pay 100% redemption, no coupon
                     if (index >= self.protection_barrier_level) & (index < self.coupon_barrier_level):
@@ -153,13 +156,15 @@ class Autocallable:
                     # autocall will happen before expiration
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.autocall_barrier_level:
-                        payoff = self.notional * (1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                        payoff = self.notional * (
+                                    1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                         has_auto_called = True
                     # index is greater or equal to coupon barrier level and less than autocall barrier level
                     # autocall will not happen
                     # pay coupon, plus conditionally all unpaid coupons
                     if (index >= self.coupon_barrier_level) & (index < self.autocall_barrier_level):
-                        payoff = self.notional * (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
+                        payoff = self.notional * (
+                                    self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
                         unpaid_coupons = 0
                     # index is less than coupon barrier level
                     # autocall will not happen
@@ -170,7 +175,7 @@ class Autocallable:
 
                 # conditionally, calculate PV for period payoff, add PV to local accumulator
                 if date > reference_date:
-                    df = market_data.get_yield_curve().discount(date)
+                    df = market_data.get_yield_curve(day_counter).discount(date)
                     payoff_present_value += payoff * df
 
             # add path PV to global accumulator

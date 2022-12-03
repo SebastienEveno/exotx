@@ -34,6 +34,7 @@ class BarrierOptionEngine(Enum):
 
 class BarrierOption:
     """Class for modeling a barrier option."""
+
     def __init__(self,
                  barrier_type: str,
                  barrier: float,
@@ -53,8 +54,7 @@ class BarrierOption:
         self.model = None
 
     def price(self, market_data: MarketData, static_data: StaticData, model: str):
-        if market_data.reference_date:
-            self.reference_date = market_data.reference_date
+        self.reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = self.reference_date
 
         # create product
