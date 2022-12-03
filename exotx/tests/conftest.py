@@ -6,7 +6,11 @@ from exotx.data.staticdata import StaticData
 # Arrange
 @pytest.fixture()
 def my_static_data() -> StaticData:
-    return StaticData()
+    my_json = {
+        'day_counter': 'Actual360',
+        'business_day_convention': 'ModifiedFollowing'
+    }
+    return StaticData.from_json(my_json)
 
 
 @pytest.fixture()
