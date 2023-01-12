@@ -40,8 +40,8 @@ my_static_data = exotx.StaticData(day_counter='Actual360', business_day_conventi
 #### From JSON
 ```python
 my_json = {
-        'day_counter': 'Actual360',
-        'business_day_convention': 'ModifiedFollowing'
+    'day_counter': 'Actual360',
+    'business_day_convention': 'ModifiedFollowing'
 }
 my_static_data = exotx.StaticData.from_json(my_json)
 ```
