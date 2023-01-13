@@ -71,7 +71,7 @@ my_market_data = exotx.MarketData.from_json(my_json)
 
 ### Price the product
 ```python
-my_autocallable.price(my_market_data, my_static_data, model='black-scholes')
+exotx.price(my_autocallable, my_market_data, my_static_data, model='black-scholes')
 ```
 ```plaintext
 96.08517973497098

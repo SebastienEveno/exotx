@@ -3,7 +3,11 @@
 Exotic options can refer to auto-callables, barrier options, etc."""
 
 from exotx.instruments.autocallable import Autocallable
+from exotx.instruments.barrieroption import BarrierOption
+from exotx.instruments.instrument import price
 
 __all__ = [
+    'price',
     'Autocallable',
+    'BarrierOption'
 ]

@@ -1,4 +1,6 @@
 import pytest
+
+from exotx import price
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 from exotx.instruments.autocallable import Autocallable
@@ -71,7 +73,7 @@ def test_autocallable_heston_price(my_autocallable: Autocallable,
     # Act
     seed = 125
     model = 'heston'
-    pv = my_autocallable.price(my_market_data, my_static_data, model, seed)
+    pv = price(my_autocallable, my_market_data, my_static_data, model, seed)
 
     # Assert
     assert pv == pytest.approx(101.94274054345938, abs=1e-10)

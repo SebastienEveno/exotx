@@ -1,4 +1,6 @@
 import pytest
+
+from exotx import price
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 from exotx.instruments.barrieroption import BarrierOption, BarrierType
@@ -40,7 +42,7 @@ def test_barrier_option_analytic_barrier_engine(my_barrier_option: BarrierOption
     my_barrier_option.strike = strike
     my_barrier_option.barrier_type = barrier_type
     # Act
-    pv = my_barrier_option.price(my_market_data, my_static_data, model)
+    pv = price(my_barrier_option, my_market_data, my_static_data, model)
 
     # Assert
     assert pv == pytest.approx(expected, abs=1e-8)
@@ -51,7 +53,7 @@ def test_barrier_option_fd_black_scholes_rebate_engine(my_barrier_option: Barrie
                                                        my_static_data: StaticData) -> None:
     # Act
     model = 'fd-bs-rebate'
-    pv = my_barrier_option.price(my_market_data, my_static_data, model)
+    pv = price(my_barrier_option, my_market_data, my_static_data, model)
 
     # Assert
     assert pv == pytest.approx(2.9568061345268424, abs=1e-10)
@@ -64,7 +66,7 @@ def test_barrier_option_fd_heston_barrier_engine_constant_vol(my_barrier_option:
     model = 'fd-heston-barrier'
     # test if we retrieve the same price as BS
     my_market_data.data = [[my_market_data.black_scholes_volatility] * len(i) for i in my_market_data.data]
-    pv = my_barrier_option.price(my_market_data, my_static_data, model)
+    pv = price(my_barrier_option, my_market_data, my_static_data, model)
 
     # Assert
     assert pv == pytest.approx(14.114219673481117, abs=1e-8)

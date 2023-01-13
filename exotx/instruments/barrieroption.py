@@ -2,6 +2,8 @@ import QuantLib as ql
 
 from datetime import datetime
 from enum import Enum
+
+from exotx.instruments.instrument import Instrument
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 from exotx.models.blackscholesmodel import BlackScholesModel
@@ -32,7 +34,7 @@ class BarrierOptionEngine(Enum):
     FDHESTONBARRIERENGINE = 'fd-heston-barrier'
 
 
-class BarrierOption:
+class BarrierOption(Instrument):
     """Class for modeling a barrier option."""
 
     def __init__(self,

@@ -1,13 +1,14 @@
 import QuantLib as ql
 import numpy as np
 
+from exotx.instruments.instrument import Instrument
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.models.hestonmodel import HestonModel
 
 
-class Autocallable:
+class Autocallable(Instrument):
     """Class for modeling an autocallable and pricing it."""
 
     def __init__(self,
