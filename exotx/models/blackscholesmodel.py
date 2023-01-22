@@ -26,9 +26,7 @@ class BlackScholesModel:
                                 self.market_data.black_scholes_volatility,
                                 self._day_counter)
         )
-        process = ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)
-
-        return process
+        return ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)
 
     @staticmethod
     def generate_paths(dates,

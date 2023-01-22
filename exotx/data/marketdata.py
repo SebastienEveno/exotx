@@ -75,8 +75,8 @@ class MarketData:
         flat_forward = ql.FlatForward(self.get_ql_reference_date(), self.dividend_rate, day_counter)
         return ql.YieldTermStructureHandle(flat_forward)
 
-    @staticmethod
-    def from_json(data: dict):
+    @classmethod
+    def from_json(cls, data: dict):
         schema = MarketDataSchema()
         return schema.load(data)
 
@@ -91,6 +91,8 @@ class MarketData:
             raise NotImplemented(f"Invalid format type {format_type} when dumping")
 
 
+# region Schema
+
 class MarketDataSchema(Schema):
     spot = fields.Float(required=True)
     risk_free_rate = fields.Float(required=True)
@@ -104,3 +106,5 @@ class MarketDataSchema(Schema):
     @post_load
     def make_market_data(self, data, **kwargs) -> MarketData:
         return MarketData(**data)
+
+# endregion

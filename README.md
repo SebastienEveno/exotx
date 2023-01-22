@@ -9,9 +9,14 @@
         <img src="https://pepy.tech/badge/exotx" /></a>
 </p>
 
-exotx allows you to easily price exotic options with a couple of lines of Python code.
+exotx is a Python wrapper for the [QuantLib library](https://www.quantlib.org/), a powerful open-source library for quantitative finance. exotx provides a simple and user-friendly interface for pricing and analyzing financial derivatives using QuantLib's advanced numerical methods.
 
-It is based on [QuantLib](https://www.quantlib.org/), the open-source library for quantitative finance.
+## Installation
+
+To install exotx, simply use pip:
+```sh
+pip install exotx
+```
 
 ## Usage
 
@@ -76,3 +81,12 @@ exotx.price(my_autocallable, my_market_data, my_static_data, model='black-schole
 ```plaintext
 96.08517973497098
 ```
+
+## Contributing
+
+We welcome contributions to exotx! If you find a bug or would like to request a new feature, please open an issue on the [Github repository](https://github.com/sebastieneveno/exotx). 
+If you would like to contribute code, please submit a pull request.
+
+## License
+
+exotx is released under the [MIT License](https://opensource.org/licenses/MIT).

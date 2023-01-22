@@ -81,8 +81,7 @@ class BarrierOption(Instrument):
         else:
             return ql.Barrier.DownOut
 
-    def _get_ql_pricing_engine(self, market_data: MarketData, static_data: StaticData,
-                               model: str):
+    def _get_ql_pricing_engine(self, market_data: MarketData, static_data: StaticData, model: str):
         model = model.lower()
         assert model in [engine.value for engine in BarrierOptionEngine]
         engine = BarrierOptionEngine(model)
@@ -101,7 +100,7 @@ class BarrierOption(Instrument):
             return ql.FdBlackScholesRebateEngine(process)
         elif engine == BarrierOptionEngine.FDHESTONBARRIERENGINE:
             heston_model = HestonModel(market_data, static_data)
-            process, model = heston_model.calibrate()
+            _, model = heston_model.calibrate()
             return ql.FdHestonBarrierEngine(model)
         else:
             raise NotImplementedError
