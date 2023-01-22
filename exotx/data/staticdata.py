@@ -116,8 +116,8 @@ class StaticData:
 
     # endregion
 
-    @staticmethod
-    def from_json(data: dict):
+    @classmethod
+    def from_json(cls, data: dict):
         schema = StaticDataSchema()
         return schema.load(data)
 
@@ -131,6 +131,8 @@ class StaticData:
         else:
             raise NotImplemented(f"Invalid format type {format_type} when dumping")
 
+
+# region Schema
 
 class BusinessDayConventionField(fields.Field):
     def _serialize(self, value: BusinessDayConvention, attr, obj, **kwargs) -> str:
@@ -168,3 +170,5 @@ class StaticDataSchema(Schema):
     @post_load
     def make_static_data(self, data, **kwargs) -> StaticData:
         return StaticData(**data)
+
+# endregion
