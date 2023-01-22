@@ -90,7 +90,7 @@ def test_price(my_vanilla_option: VanillaOption,
     result = price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config, seed=125)
 
     # Assert
-    assert result['price'] == pytest.approx(expected_price, abs=1e-4)   
+    assert result['price'] == pytest.approx(expected_price, abs=1e-4)
     if my_pricing_config.compute_greeks:
         assert result['delta'] == pytest.approx(expected_delta, abs=1e-8)
         assert result['gamma'] == pytest.approx(expected_gamma, abs=1e-8)
