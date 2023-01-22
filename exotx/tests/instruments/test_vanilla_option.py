@@ -68,7 +68,7 @@ def test_price_invalid_model(my_vanilla_option, my_market_data, my_static_data, 
     (90, PricingModelEnum.BLACK_SCHOLES, True, 13.83328710, 0.77183751, 0.01609460, -7.01024983),
     (100, PricingModelEnum.BLACK_SCHOLES, True, 7.84942762, 0.56837420, 0.02167605, -8.41931025),
     (110, PricingModelEnum.BLACK_SCHOLES, True, 3.97951968, 0.36053753, 0.02089515, -7.65352494),
-    (90, PricingModelEnum.HESTON, False, 15.52635033, 0, 0, 0)
+    (90, PricingModelEnum.HESTON, False, 15.51921588, 0, 0, 0)
 ])
 def test_price(my_vanilla_option: VanillaOption,
                my_market_data: MarketData,
@@ -87,7 +87,7 @@ def test_price(my_vanilla_option: VanillaOption,
     my_pricing_config.compute_greeks = compute_greeks
 
     # Act
-    result = price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config)
+    result = price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config, seed=125)
 
     # Assert
     assert result['price'] == pytest.approx(expected_price, abs=1e-8)

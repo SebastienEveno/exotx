@@ -23,7 +23,7 @@ class VanillaOption(Instrument):
         self.maturity = convert_maturity_to_ql_date(maturity)
         self.option_type = convert_option_type_to_ql(option_type)
 
-    def price(self, market_data, static_data, pricing_config: PricingConfiguration) -> dict:
+    def price(self, market_data, static_data, pricing_config: PricingConfiguration, seed: int = 1) -> dict:
         reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = reference_date
 
@@ -33,7 +33,7 @@ class VanillaOption(Instrument):
         ql_option = ql.VanillaOption(ql_payoff, ql_exercise)
 
         # set the pricing engine
-        ql_engine = self._get_ql_pricing_engine(market_data, static_data, pricing_config)
+        ql_engine = self._get_ql_pricing_engine(market_data, static_data, pricing_config, seed)
         ql_option.setPricingEngine(ql_engine)
 
         # price
@@ -47,7 +47,7 @@ class VanillaOption(Instrument):
             return {'price': price}
 
     @staticmethod
-    def _get_ql_pricing_engine(market_data, static_data, pricing_config: PricingConfiguration):
+    def _get_ql_pricing_engine(market_data, static_data, pricing_config: PricingConfiguration, seed: int):
         if pricing_config.model == PricingModelEnum.BLACK_SCHOLES and \
                 pricing_config.numerical_method == NumericalMethodEnum.ANALYTIC:
             bs_model = BlackScholesModel(market_data, static_data)
@@ -56,7 +56,7 @@ class VanillaOption(Instrument):
         elif pricing_config.model == PricingModelEnum.HESTON and \
                 pricing_config.numerical_method == NumericalMethodEnum.ANALYTIC:
             heston_model = HestonModel(market_data, static_data)
-            _, model = heston_model.calibrate()
+            _, model = heston_model.calibrate(seed)
             ql_engine = ql.AnalyticHestonEngine(model)
         else:
             raise ValueError(f"Invalid pricing model {pricing_config.model} with numerical method {pricing_config.numerical_method}")
