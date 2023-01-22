@@ -3,7 +3,7 @@ import pytest
 from exotx import price
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
-from exotx.instruments.barrieroption import BarrierOption, BarrierType
+from exotx.instruments.barrier_option import BarrierOption, BarrierType
 
 
 # replicates the tests in https://github.com/lballabio/QuantLib/blob/master/test-suite/barrieroption.cpp
