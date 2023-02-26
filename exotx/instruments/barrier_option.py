@@ -1,11 +1,11 @@
-import QuantLib as ql
-
 from datetime import datetime
 from enum import Enum
 
-from exotx.instruments.instrument import Instrument
+import QuantLib as ql
+
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
+from exotx.instruments.instrument import Instrument
 from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.models.hestonmodel import HestonModel
 

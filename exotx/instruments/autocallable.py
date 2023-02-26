@@ -1,9 +1,9 @@
 import QuantLib as ql
 import numpy as np
 
-from exotx.instruments.instrument import Instrument
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
+from exotx.instruments.instrument import Instrument
 from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.models.hestonmodel import HestonModel
 
@@ -142,7 +142,7 @@ class Autocallable(Instrument):
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.coupon_barrier_level:
                         payoff = self.notional * (
-                                    1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                                1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                     # index is greater or equal to protection barrier level and less than coupon barrier level
                     # pay 100% redemption, no coupon
                     if (index >= self.protection_barrier_level) & (index < self.coupon_barrier_level):
@@ -158,14 +158,14 @@ class Autocallable(Instrument):
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.autocall_barrier_level:
                         payoff = self.notional * (
-                                    1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                                1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                         has_auto_called = True
                     # index is greater or equal to coupon barrier level and less than autocall barrier level
                     # autocall will not happen
                     # pay coupon, plus conditionally all unpaid coupons
                     if (index >= self.coupon_barrier_level) & (index < self.autocall_barrier_level):
                         payoff = self.notional * (
-                                    self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
+                                self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
                         unpaid_coupons = 0
                     # index is less than coupon barrier level
                     # autocall will not happen
