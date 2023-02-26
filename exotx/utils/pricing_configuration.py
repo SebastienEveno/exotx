@@ -1,9 +1,9 @@
-from exotx.enums.enums import PricingModelEnum, NumericalMethodEnum
+from exotx.enums.enums import PricingModel, NumericalMethod
 from marshmallow import Schema, fields, ValidationError, post_load
 
 
 class PricingConfiguration:
-    def __init__(self, model: PricingModelEnum, numerical_method: NumericalMethodEnum, compute_greeks: bool):
+    def __init__(self, model: PricingModel, numerical_method: NumericalMethod, compute_greeks: bool = False):
         self.model = model
         self.numerical_method = numerical_method
         self.compute_greeks = compute_greeks
@@ -19,23 +19,23 @@ class PricingConfiguration:
 # region Schema
 
 class PricingModelField(fields.Field):
-    def _serialize(self, value: PricingModelEnum, attr, obj, **kwargs) -> str:
+    def _serialize(self, value: PricingModel, attr, obj, **kwargs) -> str:
         return value.name
 
-    def _deserialize(self, value: str, attr, data, **kwargs) -> PricingModelEnum:
+    def _deserialize(self, value: str, attr, data, **kwargs) -> PricingModel:
         try:
-            return PricingModelEnum[value]
+            return PricingModel[value]
         except KeyError as error:
             raise ValidationError(f"Invalid pricing model \'{value}\'") from error
 
 
 class NumericalMethodField(fields.Field):
-    def _serialize(self, value: NumericalMethodEnum, attr, obj, **kwargs) -> str:
+    def _serialize(self, value: NumericalMethod, attr, obj, **kwargs) -> str:
         return value.name
 
-    def _deserialize(self, value: str, attr, data, **kwargs) -> NumericalMethodEnum:
+    def _deserialize(self, value: str, attr, data, **kwargs) -> NumericalMethod:
         try:
-            return NumericalMethodEnum[value]
+            return NumericalMethod[value]
         except KeyError as error:
             raise ValidationError(f"Invalid numerical method \'{value}\'") from error
 

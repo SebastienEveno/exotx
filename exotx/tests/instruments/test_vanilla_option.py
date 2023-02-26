@@ -3,8 +3,8 @@ import pytest
 from exotx import price
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
-from exotx.enums.enums import PricingModelEnum, NumericalMethodEnum
-from exotx.instruments.option_types import OptionTypeEnum
+from exotx.enums.enums import PricingModel, NumericalMethod
+from exotx.instruments.option_type import OptionType
 from exotx.instruments.vanilla_option import VanillaOption
 from exotx.utils.pricing_configuration import PricingConfiguration
 
@@ -15,7 +15,7 @@ def my_vanilla_option() -> VanillaOption:
     strike = 90
     maturity = '2016-05-04'
     exercise = 'european'
-    option_type = OptionTypeEnum.CALL
+    option_type = OptionType.CALL
     # option_type = 'call'
 
     return VanillaOption(strike, maturity, option_type)
@@ -23,8 +23,8 @@ def my_vanilla_option() -> VanillaOption:
 
 @pytest.fixture
 def my_pricing_config() -> PricingConfiguration:
-    model = PricingModelEnum.BLACK_SCHOLES
-    numerical_method = NumericalMethodEnum.ANALYTIC
+    model = PricingModel.BLACK_SCHOLES
+    numerical_method = NumericalMethod.ANALYTIC
     compute_greeks = True
 
     return PricingConfiguration(model, numerical_method, compute_greeks)
@@ -64,12 +64,14 @@ def test_price_invalid_model(my_vanilla_option, my_market_data, my_static_data, 
         price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config)
 
 
-@pytest.mark.parametrize('strike, model, compute_greeks, expected_price, expected_delta, expected_gamma, expected_theta', [
-    (90, PricingModelEnum.BLACK_SCHOLES, True, 13.83328710, 0.77183751, 0.01609460, -7.01024983),
-    (100, PricingModelEnum.BLACK_SCHOLES, True, 7.84942762, 0.56837420, 0.02167605, -8.41931025),
-    (110, PricingModelEnum.BLACK_SCHOLES, True, 3.97951968, 0.36053753, 0.02089515, -7.65352494),
-    (90, PricingModelEnum.HESTON, False, 15.51921588, 0, 0, 0)
-])
+@pytest.mark.parametrize(
+    'strike, model, compute_greeks, expected_price, expected_delta, expected_gamma, expected_theta',
+    [
+        (90, PricingModel.BLACK_SCHOLES, True, 13.83328710, 0.77183751, 0.01609460, -7.01024983),
+        (100, PricingModel.BLACK_SCHOLES, True, 7.84942762, 0.56837420, 0.02167605, -8.41931025),
+        (110, PricingModel.BLACK_SCHOLES, True, 3.97951968, 0.36053753, 0.02089515, -7.65352494),
+        (90, PricingModel.HESTON, False, 15.51921588, 0, 0, 0)
+    ])
 def test_price(my_vanilla_option: VanillaOption,
                my_market_data: MarketData,
                my_static_data: StaticData,

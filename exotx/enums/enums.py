@@ -1,20 +1,20 @@
 from enum import Enum
 
 
-class PricingModelEnum(Enum):
+class PricingModel(Enum):
     BLACK_SCHOLES = "BlackScholes"
     HESTON = "Heston"
 
     @staticmethod
     def values():
-        return [e.value for e in PricingModelEnum]
+        return [e.value for e in PricingModel]
 
 
-class NumericalMethodEnum(Enum):
+class NumericalMethod(Enum):
     PDE = "PDE"
     MC = "MC"
     ANALYTIC = "ANALYTIC"
 
     @staticmethod
     def values():
-        return [e.value for e in NumericalMethodEnum]
+        return [e.value for e in NumericalMethod]
