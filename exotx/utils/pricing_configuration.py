@@ -3,7 +3,7 @@ from marshmallow import Schema, fields, ValidationError, post_load
 
 
 class PricingConfiguration:
-    def __init__(self, model: PricingModel, numerical_method: NumericalMethod, compute_greeks: bool):
+    def __init__(self, model: PricingModel, numerical_method: NumericalMethod, compute_greeks: bool = False):
         self.model = model
         self.numerical_method = numerical_method
         self.compute_greeks = compute_greeks
