@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 from typing import Union, List
 
 import QuantLib as ql
@@ -7,6 +6,9 @@ from marshmallow import Schema, fields, post_load, ValidationError
 
 from exotx.enums.enums import PricingModel, NumericalMethod
 from exotx.helpers.dates import convert_maturity_to_ql_date
+from exotx.instruments.average_calculation import AverageCalculation, convert_average_calculation, \
+    AverageCalculationField
+from exotx.instruments.average_convention import AverageConvention, convert_average_convention, AverageConventionField
 from exotx.instruments.average_type import AverageTypeField, AverageType, convert_average_type_to_ql
 from exotx.instruments.instrument import Instrument
 from exotx.instruments.option_type import convert_option_type_to_ql, OptionType, OptionTypeField
@@ -14,35 +16,20 @@ from exotx.models.blackscholesmodel import BlackScholesModel
 from exotx.utils.pricing_configuration import PricingConfiguration
 
 
-class AverageCalculation(Enum):
-    CONTINUOUS = 'continuous'
-    DISCRETE = 'discrete'
-
-
-class AverageCalculationField(fields.Field):
-    def _serialize(self, value: AverageCalculation, attr, obj, **kwargs) -> str:
-        return value.name
-
-    def _deserialize(self, value: str, attr, data, **kwargs) -> AverageCalculation:
-        try:
-            return AverageCalculation[value]
-        except KeyError as error:
-            raise ValidationError(
-                f"Invalid average calculation \"{value}\", expected one of {list(AverageCalculation.__members__.keys())}") from error
-
-
 class AsianOption(Instrument):
     def __init__(self,
                  strike: float, maturity: Union[str, datetime], option_type: Union[str, OptionType],
                  average_type: Union[str, AverageType], average_calculation: Union[str, AverageCalculation],
-                 arithmetic_running_accumulator: float = 0.0, geometric_running_accumulator: float = 1.0,
-                 past_fixings: int = 0, future_fixing_dates: List[datetime] = None):
+                 average_convention: Union[str, AverageConvention], arithmetic_running_accumulator: float = 0.0,
+                 geometric_running_accumulator: float = 1.0, past_fixings: int = 0,
+                 future_fixing_dates: List[datetime] = None):
         assert strike >= 0, "Invalid strike: cannot be negative"
         self.strike = strike
         self.maturity = convert_maturity_to_ql_date(maturity)
         self.option_type = convert_option_type_to_ql(option_type)
         self.average_type = convert_average_type_to_ql(average_type)
-        self.average_calculation: AverageCalculation = average_calculation
+        self.average_calculation: AverageCalculation = convert_average_calculation(average_calculation)
+        self.average_convention: AverageConvention = convert_average_convention(average_convention)
         self.arithmetic_running_accumulator = arithmetic_running_accumulator
         self.geometric_running_accumulator = geometric_running_accumulator
         self.past_fixings = past_fixings
@@ -99,13 +86,24 @@ class AsianOption(Instrument):
                     # TODO: filter on pricing_config.pricing_model, here we assume black-scholes only
                     bs_model = BlackScholesModel(market_data, static_data)
                     process = bs_model.setup()
-                    return ql.AnalyticDiscreteGeometricAveragePriceAsianEngine(process)
+                    if self.average_convention == AverageConvention.PRICE:
+                        return ql.AnalyticDiscreteGeometricAveragePriceAsianEngine(process)
+                    elif self.average_convention == AverageConvention.STRIKE:
+                        return ql.AnalyticDiscreteGeometricAverageStrikeAsianEngine(process)
+                    else:
+                        raise ValueError(f"Invalid average convention \"{self.average_convention}\"")
                 elif pricing_config.numerical_method == NumericalMethod.MC:
                     # TODO: filter on pricing_config.pricing_model, here we assume black-scholes only
                     bs_model = BlackScholesModel(market_data, static_data)
                     process = bs_model.setup()
-                    # TODO: get the traits parameter (lowdiscrepancy) from the pricing configuration
-                    return ql.MCDiscreteGeometricAPEngine(process, "lowdiscrepancy")
+                    random_number_generator = str(pricing_config.random_number_generator)
+                    if self.average_convention == AverageConvention.PRICE:
+                        return ql.MCDiscreteGeometricAPEngine(process, random_number_generator)
+                    elif self.average_convention == AverageConvention.STRIKE:
+                        return ValueError(f"No corresponding engine for asian option for numerical method {pricing_config.numerical_method}, "
+                                          f"average type {self.average_type}, average calculation {self.average_calculation}, and average convention {self.average_convention}")
+                    else:
+                        raise ValueError(f"Invalid average convention \"{self.average_convention}\"")
                 else:
                     raise ValueError(
                         f"No engine for asian option with numerical method {pricing_config.numerical_method}"
@@ -114,7 +112,13 @@ class AsianOption(Instrument):
                 if pricing_config.numerical_method == NumericalMethod.MC:
                     bs_model = BlackScholesModel(market_data, static_data)
                     process = bs_model.setup()
-                    return ql.MCDiscreteArithmeticAPEngine(process, "lowdiscrepancy")
+                    random_number_generator = str(pricing_config.random_number_generator)
+                    if self.average_convention == AverageConvention.PRICE:
+                        return ql.MCDiscreteArithmeticAPEngine(process, random_number_generator)
+                    elif self.average_convention == AverageConvention.STRIKE:
+                        return ql.MCDiscreteArithmeticASEngine(process, random_number_generator)
+                    else:
+                        raise ValueError(f"Invalid average convention \"{self.average_convention}\"")
             else:
                 raise ValueError(f"Invalid average type {self.average_type}")
         elif self.average_calculation == AverageCalculation.CONTINUOUS:
@@ -149,9 +153,10 @@ class AsianOption(Instrument):
 class AsianOptionSchema(Schema):
     strike = fields.Float()
     maturity = fields.Date(format="%Y-%m-%d")
-    option_type = OptionTypeField(allow_none=False)
-    average_type = AverageTypeField(allow_none=False)
-    average_calculation = AverageCalculationField(allow_none=False)
+    option_type = OptionTypeField()
+    average_type = AverageTypeField()
+    average_calculation = AverageCalculationField()
+    average_convention = AverageConventionField()
 
     @post_load
     def make_asian_option(self, data, **kwargs) -> AsianOption:
