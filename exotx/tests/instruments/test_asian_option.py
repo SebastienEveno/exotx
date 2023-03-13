@@ -1,6 +1,8 @@
 from datetime import timedelta
-import pytest
+
 import QuantLib as ql
+import pytest
+
 from exotx import price
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData

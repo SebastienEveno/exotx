@@ -1,6 +1,8 @@
-import pytest
-from exotx.data.static import Calendar, CalendarRegion, CalendarMarket
 from typing import Optional, Union
+
+import pytest
+
+from exotx.data.static import Calendar, CalendarRegion, CalendarMarket
 
 
 # region from_json

@@ -1,7 +1,8 @@
 import json
-import QuantLib as ql
 from datetime import datetime
 from typing import List, Union
+
+import QuantLib as ql
 from marshmallow import Schema, fields, post_load
 
 

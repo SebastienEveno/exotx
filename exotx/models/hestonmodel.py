@@ -1,7 +1,9 @@
+from typing import List, Tuple
+
 import QuantLib as ql
 import numpy as np
 from scipy.optimize import differential_evolution
-from typing import List, Tuple
+
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 

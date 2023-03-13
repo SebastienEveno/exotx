@@ -1,5 +1,7 @@
 from typing import Union, Tuple
+
 from marshmallow import Schema, fields, post_load, validates_schema
+
 from exotx.data.static.calendars import CalendarRegion, CalendarMarket, region_to_markets, available_regions
 
 

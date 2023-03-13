@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Union, List
 
 import QuantLib as ql
-from marshmallow import Schema, fields, post_load, ValidationError
+from marshmallow import Schema, fields, post_load
 
 from exotx.enums.enums import PricingModel, NumericalMethod
 from exotx.helpers.dates import convert_maturity_to_ql_date
@@ -100,8 +100,9 @@ class AsianOption(Instrument):
                     if self.average_convention == AverageConvention.PRICE:
                         return ql.MCDiscreteGeometricAPEngine(process, random_number_generator)
                     elif self.average_convention == AverageConvention.STRIKE:
-                        return ValueError(f"No corresponding engine for asian option for numerical method {pricing_config.numerical_method}, "
-                                          f"average type {self.average_type}, average calculation {self.average_calculation}, and average convention {self.average_convention}")
+                        return ValueError(
+                            f"No corresponding engine for asian option for numerical method {pricing_config.numerical_method}, "
+                            f"average type {self.average_type}, average calculation {self.average_calculation}, and average convention {self.average_convention}")
                     else:
                         raise ValueError(f"Invalid average convention \"{self.average_convention}\"")
                 else:

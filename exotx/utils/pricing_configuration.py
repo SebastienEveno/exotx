@@ -1,5 +1,6 @@
-from exotx.enums.enums import PricingModel, NumericalMethod, RandomNumberGenerator
 from marshmallow import Schema, fields, ValidationError, post_load
+
+from exotx.enums.enums import PricingModel, NumericalMethod, RandomNumberGenerator
 
 
 class PricingConfiguration:

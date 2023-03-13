@@ -1,8 +1,8 @@
 import pytest
+from marshmallow import ValidationError
 
 from exotx.enums.enums import PricingModel, NumericalMethod
 from exotx.utils.pricing_configuration import PricingConfiguration, PricingConfigurationSchema
-from marshmallow import ValidationError
 
 
 def test_to_json():

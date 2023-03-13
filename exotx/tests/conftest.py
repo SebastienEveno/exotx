@@ -1,4 +1,5 @@
 import pytest
+
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 

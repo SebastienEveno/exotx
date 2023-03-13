@@ -1,6 +1,8 @@
+from typing import Optional, Union
+
 import QuantLib as ql
 import pytest
-from typing import Optional, Union
+
 from exotx.data import StaticData
 from exotx.data.static import Calendar, BusinessDayConvention, DayCounter
 
