@@ -47,7 +47,7 @@ def test_from_json_invalid_model():
     }
     schema = PricingConfigurationSchema()
     with pytest.raises(ValidationError) as e:
-        config = schema.load(json_data)
+        _ = schema.load(json_data)
     assert 'model' in e.value.messages
 
 
@@ -59,5 +59,5 @@ def test_from_json_invalid_method():
     }
     schema = PricingConfigurationSchema()
     with pytest.raises(ValidationError) as e:
-        config = schema.load(json_data)
+        _ = schema.load(json_data)
     assert 'numerical_method' in e.value.messages

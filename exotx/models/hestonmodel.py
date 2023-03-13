@@ -37,8 +37,7 @@ class HestonModel:
 
         return process, model
 
-    def _setup(self, initial_conditions: Tuple[float, ...] = None) -> Tuple[ql.HestonProcess,
-    ql.HestonModel]:
+    def _setup(self, initial_conditions: Tuple[float, ...] = None) -> Tuple[ql.HestonProcess, ql.HestonModel]:
         if initial_conditions:
             theta, kappa, sigma, rho, v0 = initial_conditions
         else:
@@ -52,8 +51,7 @@ class HestonModel:
 
         return process, model
 
-    def _setup_helpers(self, engine: ql.PricingEngine) -> Tuple[List[ql.HestonModelHelper],
-    List[Tuple[ql.Date, float]]]:
+    def _setup_helpers(self, engine: ql.PricingEngine) -> Tuple[List[ql.HestonModelHelper], List[Tuple[ql.Date, float]]]:
         helpers = []
         grid_data = []
         for i, date in enumerate([ql.Date().from_date(date) for date in self.market_data.expiration_dates]):

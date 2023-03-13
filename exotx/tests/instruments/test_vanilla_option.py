@@ -14,9 +14,7 @@ from exotx.utils.pricing_configuration import PricingConfiguration
 def my_vanilla_option() -> VanillaOption:
     strike = 90
     maturity = '2016-05-04'
-    exercise = 'european'
     option_type = OptionType.CALL
-    # option_type = 'call'
 
     return VanillaOption(strike, maturity, option_type)
 
