@@ -16,7 +16,8 @@ def test_to_json():
     assert json_data == {
         'model': 'BLACK_SCHOLES',
         'numerical_method': 'ANALYTIC',
-        'compute_greeks': True
+        'compute_greeks': True,
+        'random_number_generator': ''
     }
 
 

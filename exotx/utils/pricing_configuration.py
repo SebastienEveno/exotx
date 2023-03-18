@@ -5,7 +5,7 @@ from exotx.enums.enums import PricingModel, NumericalMethod, RandomNumberGenerat
 
 class PricingConfiguration:
     def __init__(self, model: PricingModel, numerical_method: NumericalMethod,
-                 random_number_generator: RandomNumberGenerator = RandomNumberGenerator.PSEUDORANDOM,
+                 random_number_generator: RandomNumberGenerator = None,
                  compute_greeks: bool = False):
         self.model = model
         self.numerical_method = numerical_method
@@ -46,6 +46,8 @@ class NumericalMethodField(fields.Field):
 
 class RandomNumberGeneratorField(fields.Field):
     def _serialize(self, value: RandomNumberGenerator, attr, obj, **kwargs) -> str:
+        if not value:
+            return ''
         return value.name
 
     def _deserialize(self, value: str, attr, data, **kwargs) -> RandomNumberGenerator:
