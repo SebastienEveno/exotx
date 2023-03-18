@@ -1,11 +1,13 @@
 import json
-import QuantLib as ql
 from typing import Union
-from exotx.data.static.daycounters import day_counters_to_ql, DayCounter
+
+import QuantLib as ql
+from marshmallow import Schema, fields, post_load, ValidationError
+
 from exotx.data.static.calendar import Calendar, CalendarSchema
 from exotx.data.static.calendars import calendars_to_ql_calendars
 from exotx.data.static.conventions import business_day_conventions_to_ql, BusinessDayConvention
-from marshmallow import Schema, fields, post_load, ValidationError
+from exotx.data.static.daycounters import day_counters_to_ql, DayCounter
 
 
 class StaticData:
@@ -129,7 +131,7 @@ class StaticData:
         elif format_type == "str":
             return json.dumps(my_json)
         else:
-            raise NotImplemented(f"Invalid format type {format_type} when dumping")
+            raise NotImplementedError(f"Invalid format type {format_type} when dumping")
 
 
 # region Schema

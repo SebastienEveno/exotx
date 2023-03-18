@@ -1,5 +1,6 @@
 import QuantLib as ql
 import numpy as np
+
 from exotx.data.marketdata import MarketData
 from exotx.data.staticdata import StaticData
 

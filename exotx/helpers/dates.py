@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Union
+
 import QuantLib as ql
 
 

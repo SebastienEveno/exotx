@@ -1,7 +1,8 @@
 import json
-import QuantLib as ql
 from datetime import datetime
 from typing import List, Union
+
+import QuantLib as ql
 from marshmallow import Schema, fields, post_load
 
 
@@ -88,7 +89,7 @@ class MarketData:
         elif format_type == "str":
             return json.dumps(my_json)
         else:
-            raise NotImplemented(f"Invalid format type {format_type} when dumping")
+            raise NotImplementedError(f"Invalid format type {format_type} when dumping")
 
 
 # region Schema

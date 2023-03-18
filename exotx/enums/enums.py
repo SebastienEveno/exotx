@@ -18,3 +18,12 @@ class NumericalMethod(Enum):
     @staticmethod
     def values():
         return [e.value for e in NumericalMethod]
+
+
+class RandomNumberGenerator(Enum):
+    PSEUDORANDOM = "pseudorandom"
+    LOWDISCREPANCY = "lowdiscrepancy"
+
+    @staticmethod
+    def values():
+        return [e.value for e in RandomNumberGenerator]

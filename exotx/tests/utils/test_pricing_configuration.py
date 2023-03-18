@@ -1,8 +1,8 @@
 import pytest
+from marshmallow import ValidationError
 
 from exotx.enums.enums import PricingModel, NumericalMethod
 from exotx.utils.pricing_configuration import PricingConfiguration, PricingConfigurationSchema
-from marshmallow import ValidationError
 
 
 def test_to_json():
@@ -16,7 +16,8 @@ def test_to_json():
     assert json_data == {
         'model': 'BLACK_SCHOLES',
         'numerical_method': 'ANALYTIC',
-        'compute_greeks': True
+        'compute_greeks': True,
+        'random_number_generator': ''
     }
 
 
@@ -47,7 +48,7 @@ def test_from_json_invalid_model():
     }
     schema = PricingConfigurationSchema()
     with pytest.raises(ValidationError) as e:
-        config = schema.load(json_data)
+        _ = schema.load(json_data)
     assert 'model' in e.value.messages
 
 
@@ -59,5 +60,5 @@ def test_from_json_invalid_method():
     }
     schema = PricingConfigurationSchema()
     with pytest.raises(ValidationError) as e:
-        config = schema.load(json_data)
+        _ = schema.load(json_data)
     assert 'numerical_method' in e.value.messages

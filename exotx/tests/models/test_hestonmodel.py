@@ -1,8 +1,9 @@
 import pytest
+
 from exotx.data.marketdata import MarketData
+from exotx.data.static.calendar import Calendar
 from exotx.data.staticdata import StaticData
 from exotx.models.hestonmodel import HestonModel
-from exotx.data.static.calendar import Calendar
 
 
 # Arrange

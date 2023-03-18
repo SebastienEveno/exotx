@@ -14,9 +14,7 @@ from exotx.utils.pricing_configuration import PricingConfiguration
 def my_vanilla_option() -> VanillaOption:
     strike = 90
     maturity = '2016-05-04'
-    exercise = 'european'
     option_type = OptionType.CALL
-    # option_type = 'call'
 
     return VanillaOption(strike, maturity, option_type)
 
@@ -27,7 +25,7 @@ def my_pricing_config() -> PricingConfiguration:
     numerical_method = NumericalMethod.ANALYTIC
     compute_greeks = True
 
-    return PricingConfiguration(model, numerical_method, compute_greeks)
+    return PricingConfiguration(model, numerical_method, compute_greeks=compute_greeks)
 
 
 def test_price_compute_greeks_is_true(my_vanilla_option, my_market_data, my_static_data, my_pricing_config):

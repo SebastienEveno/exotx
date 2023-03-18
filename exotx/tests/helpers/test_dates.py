@@ -1,5 +1,6 @@
-import pytest
 import QuantLib as ql
+import pytest
+
 from exotx.helpers.dates import convert_maturity_to_ql_date
 
 
