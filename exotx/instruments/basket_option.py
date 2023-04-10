@@ -108,16 +108,16 @@ class BasketOption(Instrument):
         day_counter = static_data.get_ql_day_counter()
 
         processes = [ql.BlackScholesMertonProcess(ql.QuoteHandle(ql.SimpleQuote(x)),
-                                                  market_data.get_dividend_curve(),
-                                                  market_data.get_yield_curve(),
+                                                  market_data.get_dividend_curve(day_counter),
+                                                  market_data.get_yield_curve(day_counter),
                                                   ql.BlackVolTermStructureHandle(
                                                       ql.BlackConstantVol(reference_date, calendar, y, day_counter)))
                      for x, y in zip(market_data.underlying_spots, market_data.underlying_black_scholes_volatilities)]
         multi_processes = ql.StochasticProcessArray(processes, market_data.get_correlation_matrix())
 
         # TODO: Consider different pricing engines based on self.basket_type and/or pricing_config
-        return ql.MCEuropeanBasketEngine(multi_processes, RandomNumberGenerator.PSEUDORANDOM, timeStepsPerYear=1,
-                                         requiredSamples=10000, seed=seed)
+        return ql.MCEuropeanBasketEngine(multi_processes, RandomNumberGenerator.PSEUDORANDOM.value, timeStepsPerYear=1,
+                                         requiredSamples=100000, seed=seed)
 
 
 # region Schema

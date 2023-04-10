@@ -138,6 +138,7 @@ class MarketDataSchema(Schema):
     strikes = fields.List(fields.Float(), allow_none=True)
     data = fields.List(fields.List(fields.Float), allow_none=True)
     underlying_black_scholes_volatilities = fields.List(fields.Float(allow_none=True))
+    correlation_matrix = fields.List(fields.List(fields.Float()))
 
     @post_load
     def make_market_data(self, data, **kwargs) -> MarketData:
