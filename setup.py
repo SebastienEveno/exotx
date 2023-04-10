@@ -29,15 +29,15 @@ setup(name='exotx',
       ],
       python_requires='>=3.10.2, <4',
       classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Financial and Insurance Industry',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.10',
-        'Operating System :: OS Independent',
-        'Intended Audience :: Science/Research',
-        'Topic :: Software Development',
-        'Topic :: Office/Business :: Financial',
-        'Topic :: Scientific/Engineering :: Information Analysis'
-        ]
+          'Development Status :: 4 - Beta',
+          'Intended Audience :: Developers',
+          'Intended Audience :: Financial and Insurance Industry',
+          'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 3.10',
+          'Operating System :: OS Independent',
+          'Intended Audience :: Science/Research',
+          'Topic :: Software Development',
+          'Topic :: Office/Business :: Financial',
+          'Topic :: Scientific/Engineering :: Information Analysis'
+      ]
       )

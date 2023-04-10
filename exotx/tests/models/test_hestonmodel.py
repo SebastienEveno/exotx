@@ -15,7 +15,7 @@ def my_static_data() -> StaticData:
 @pytest.fixture
 def my_market_data() -> MarketData:
     reference_date = '2015-11-06'
-    spot = 659.37
+    underlying_spots = [659.37]
     risk_free_rate = 0.01
     dividend_rate = 0.0
     expiration_dates = ['2015-12-06', '2016-01-06', '2016-02-06', '2016-03-06', '2016-04-06',
@@ -51,7 +51,7 @@ def my_market_data() -> MarketData:
         [0.34891, 0.34154, 0.33539, 0.3297, 0.33742, 0.33337, 0.32881, 0.32492]]
 
     return MarketData(reference_date=reference_date,
-                      spot=spot,
+                      underlying_spots=underlying_spots,
                       expiration_dates=expiration_dates,
                       strikes=strikes,
                       data=data,

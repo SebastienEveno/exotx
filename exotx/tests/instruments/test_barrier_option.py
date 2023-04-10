@@ -65,7 +65,8 @@ def test_barrier_option_fd_heston_barrier_engine_constant_vol(my_barrier_option:
     # Act
     model = 'fd-heston-barrier'
     # test if we retrieve the same price as BS
-    my_market_data.data = [[my_market_data.black_scholes_volatility] * len(i) for i in my_market_data.data]
+    my_market_data.data = [[my_market_data.underlying_black_scholes_volatilities[0]] * len(i) for i in
+                           my_market_data.data]
     pv = price(my_barrier_option, my_market_data, my_static_data, model)
 
     # Assert

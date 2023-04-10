@@ -151,6 +151,7 @@ class AsianOption(Instrument):
     # endregion
 
 
+# region Schema
 class AsianOptionSchema(Schema):
     strike = fields.Float()
     maturity = fields.Date(format="%Y-%m-%d")
@@ -162,3 +163,4 @@ class AsianOptionSchema(Schema):
     @post_load
     def make_asian_option(self, data, **kwargs) -> AsianOption:
         return AsianOption(**data)
+# endregion

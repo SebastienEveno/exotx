@@ -18,10 +18,10 @@ def my_static_data() -> StaticData:
 def my_market_data() -> MarketData:
     my_json = {
         'reference_date': '2015-11-06',
-        'spot': 100,
+        'underlying_spots': [100],
         'risk_free_rate': 0.08,
         'dividend_rate': 0.04,
-        'black_scholes_volatility': 0.25,
+        'underlying_black_scholes_volatilities': [0.25],
         'expiration_dates': [
             '2015-12-06', '2016-01-06', '2016-02-06', '2016-03-06', '2016-04-06', '2016-05-06',
             '2016-06-06', '2016-07-06', '2016-08-06', '2016-09-06', '2016-10-06', '2016-11-06',
