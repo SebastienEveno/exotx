@@ -18,13 +18,13 @@ class BlackScholesModel:
         self._day_counter: ql.DayCounter = static_data.get_ql_day_counter()
 
     def setup(self) -> ql.BlackScholesMertonProcess:
-        spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.spot))
+        spot_handle = ql.QuoteHandle(ql.SimpleQuote(self.market_data.underlying_spots[0]))
         flat_ts = self.market_data.get_yield_curve(self._day_counter)
         dividend_yield = self.market_data.get_dividend_curve(self._day_counter)
         flat_vol_ts = ql.BlackVolTermStructureHandle(
             ql.BlackConstantVol(self._reference_date,
                                 self._calendar,
-                                self.market_data.black_scholes_volatility,
+                                self.market_data.underlying_black_scholes_volatilities[0],
                                 self._day_counter)
         )
         return ql.BlackScholesMertonProcess(spot_handle, dividend_yield, flat_ts, flat_vol_ts)

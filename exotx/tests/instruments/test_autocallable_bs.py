@@ -10,16 +10,16 @@ from exotx.instruments.autocallable import Autocallable
 @pytest.fixture
 def my_market_data() -> MarketData:
     reference_date = '2015-11-06'
-    spot = 100.0
-    black_scholes_volatility = 0.2
+    underlying_spots = [100.0]
+    underlying_black_scholes_volatilities = [0.2]
     risk_free_rate = 0.01
     dividend_rate = 0.0
 
     return MarketData(reference_date=reference_date,
-                      spot=spot,
+                      underlying_spots=underlying_spots,
                       risk_free_rate=risk_free_rate,
                       dividend_rate=dividend_rate,
-                      black_scholes_volatility=black_scholes_volatility)
+                      underlying_black_scholes_volatilities=underlying_black_scholes_volatilities)
 
 
 @pytest.fixture

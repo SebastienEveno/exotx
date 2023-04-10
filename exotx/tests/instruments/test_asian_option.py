@@ -27,10 +27,10 @@ def my_static_data() -> StaticData:
 def my_market_data() -> MarketData:
     my_json = {
         'reference_date': '2015-11-06',
-        'spot': 80,
+        'underlying_spots': [80],
         'risk_free_rate': 0.05,
         'dividend_rate': -0.03,
-        'black_scholes_volatility': 0.20
+        'underlying_black_scholes_volatilities': [0.20]
     }
 
     return MarketData.from_json(my_json)
@@ -136,10 +136,10 @@ def test_price_analytic_discrete_geometric_average_strike(my_asian_option: Asian
     my_asian_option.future_fixing_dates = [ql.Date().from_date(my_market_data.reference_date + timedelta(days=36 * i))
                                            for i in range(1, 11)]
     my_asian_option.average_convention = average_convention
-    my_market_data.spot = 100
+    my_market_data.underlying_spots = [100]
     my_market_data.risk_free_rate = 0.06
     my_market_data.dividend_rate = 0.03
-    my_market_data.black_scholes_volatility = 0.20
+    my_market_data.underlying_black_scholes_volatilities = [0.20]
 
     # Act
     result = price(my_asian_option, my_market_data, my_static_data, my_pricing_config)

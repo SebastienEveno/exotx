@@ -7,10 +7,10 @@ def test_market_data_from_json():
     # Arrange
     my_json = {
         'reference_date': '2015-11-06',
-        'spot': 100,
+        'underlying_spots': [100],
         'risk_free_rate': 0.01,
         'dividend_rate': 0,
-        'black_scholes_volatility': 0.2
+        'underlying_black_scholes_volatilities': [0.2]
     }
 
     # Act
