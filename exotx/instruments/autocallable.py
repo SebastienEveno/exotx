@@ -9,7 +9,21 @@ from exotx.models.hestonmodel import HestonModel
 
 
 class Autocallable(Instrument):
-    """Class for modeling an autocallable and pricing it."""
+    """
+    A class for modeling an autocallable instrument.
+
+    The Autocallable class provides methods for pricing and analyzing autocallable instruments using various
+    models and pricing engines from the QuantLib library.
+
+    Attributes:
+        notional (int): The notional amount of the instrument.
+        strike (float): The strike price of the instrument.
+        autocall_barrier_level (float): The autocall barrier level.
+        annual_coupon_value (float): The annual coupon value.
+        coupon_barrier_level (float): The coupon barrier level.
+        protection_barrier_level (float): The protection barrier level.
+        has_memory (bool): Indicates whether the instrument has memory, affecting the calculation of unpaid coupons.
+    """
 
     def __init__(self,
                  notional: int,
@@ -57,24 +71,57 @@ class Autocallable(Instrument):
                               static_data: StaticData,
                               model: str,
                               seed: int = 1) -> np.ndarray:
+        """
+        Generates the underlying paths for the autocallable instrument using the given market data, static data,
+        and model.
+
+        :param dates: The array of dates for which the underlying paths are generated.
+        :type dates: np.ndarray
+        :param market_data: The market data used for generating the underlying paths.
+        :type market_data: MarketData
+        :param static_data: The static data used for generating the underlying paths.
+        :type static_data: StaticData
+        :param model: The model used for generating the underlying paths.
+        :type model: str
+        :param seed: The seed used for random number generation, defaults to 1.
+        :type seed: int, optional
+        :return: The generated underlying paths.
+        :rtype: np.ndarray
+        """
         # set static data
         day_counter = static_data.get_ql_day_counter()
 
         if model.lower() == 'black-scholes':
             black_scholes_model = BlackScholesModel(market_data, static_data)
             process = black_scholes_model.setup()
-            underlying_paths = black_scholes_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
+            underlying_paths = black_scholes_model.generate_paths(
+                dates, day_counter, process, seed=seed)[:, 1:]
         else:
             # defaults to Heston model
             # create and calibrate the heston model based on market data
             heston_model = HestonModel(market_data, static_data)
             process, model = heston_model.calibrate(seed=seed)
             # generate paths for a given set of dates, exclude the current spot rate
-            underlying_paths = heston_model.generate_paths(dates, day_counter, process, seed=seed)[:, 1:]
+            underlying_paths = heston_model.generate_paths(
+                dates, day_counter, process, seed=seed)[:, 1:]
 
         return underlying_paths
 
     def price(self, market_data: MarketData, static_data: StaticData, model: str, seed: int = 1):
+        """
+        Calculates the price of the autocallable instrument using the given market data, static data, and model.
+
+        :param market_data: The market data used for pricing the instrument.
+        :type market_data: MarketData
+        :param static_data: The static data used for pricing the instrument.
+        :type static_data: StaticData
+        :param model: The model used for pricing the instrument.
+        :type model: str
+        :param seed: The seed used for random number generation, defaults to 1.
+        :type seed: int, optional
+        :return: The price of the autocallable instrument.
+        :rtype: float
+        """
         reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = reference_date
 
@@ -84,7 +131,8 @@ class Autocallable(Instrument):
 
         # coupon schedule
         start_date = reference_date
-        first_coupon_date = calendar.advance(start_date, ql.Period(6, ql.Months))
+        first_coupon_date = calendar.advance(
+            start_date, ql.Period(6, ql.Months))
         last_coupon_date = calendar.advance(start_date, ql.Period(3, ql.Years))
         coupon_dates = np.array(list(ql.Schedule(first_coupon_date, last_coupon_date, ql.Period(ql.Semiannual),
                                                  calendar, business_day_convention, business_day_convention,
@@ -103,18 +151,22 @@ class Autocallable(Instrument):
 
         # create date array for path generator
         # combine valuation date and all the remaining coupon dates
-        dates = np.hstack((np.array([reference_date]), coupon_dates[coupon_dates > reference_date]))
+        dates = np.hstack(
+            (np.array([reference_date]), coupon_dates[coupon_dates > reference_date]))
 
         # get underlying paths
-        paths = self._get_underlying_paths(dates, market_data, static_data, model, seed)
+        paths = self._get_underlying_paths(
+            dates, market_data, static_data, model, seed)
 
         # identify the past coupon dates
         past_coupon_dates = coupon_dates[coupon_dates <= reference_date]
 
         # conditionally, merge given past fixings from a given dictionary and generated paths
         if past_coupon_dates.shape[0] > 0:
-            past_fixings_array = np.array([past_fixings[past_date] for past_date in past_coupon_dates])
-            past_fixings_array = np.tile(past_fixings_array, (paths.shape[0], 1))
+            past_fixings_array = np.array(
+                [past_fixings[past_date] for past_date in past_coupon_dates])
+            past_fixings_array = np.tile(
+                past_fixings_array, (paths.shape[0], 1))
             paths = np.hstack((past_fixings_array, paths))
 
         # result accumulator
@@ -142,7 +194,7 @@ class Autocallable(Instrument):
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.coupon_barrier_level:
                         payoff = self.notional * (
-                                1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                            1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                     # index is greater or equal to protection barrier level and less than coupon barrier level
                     # pay 100% redemption, no coupon
                     if (index >= self.protection_barrier_level) & (index < self.coupon_barrier_level):
@@ -158,14 +210,14 @@ class Autocallable(Instrument):
                     # pay 100% redemption, plus coupon, plus conditionally all unpaid coupons
                     if index >= self.autocall_barrier_level:
                         payoff = self.notional * (
-                                1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
+                            1 + (self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory)))
                         has_auto_called = True
                     # index is greater or equal to coupon barrier level and less than autocall barrier level
                     # autocall will not happen
                     # pay coupon, plus conditionally all unpaid coupons
                     if (index >= self.coupon_barrier_level) & (index < self.autocall_barrier_level):
                         payoff = self.notional * (
-                                self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
+                            self.annual_coupon_value * year_fraction * (1 + unpaid_coupons * has_memory))
                         unpaid_coupons = 0
                     # index is less than coupon barrier level
                     # autocall will not happen
@@ -176,7 +228,8 @@ class Autocallable(Instrument):
 
                 # conditionally, calculate PV for period payoff, add PV to local accumulator
                 if date > reference_date:
-                    df = market_data.get_yield_curve(day_counter).discount(date)
+                    df = market_data.get_yield_curve(
+                        day_counter).discount(date)
                     payoff_present_value += payoff * df
 
             # add path PV to global accumulator

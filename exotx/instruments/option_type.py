@@ -15,6 +15,27 @@ class OptionType(Enum):
 
 
 def convert_option_type_to_ql(option_type: Union[str, OptionType]) -> ql.Option:
+    """
+    Converts an OptionType enum value or a string representing an option type to the corresponding QuantLib option type.
+
+    This function takes an input option_type, which can be either an OptionType enum value or a string, and returns the
+    corresponding QuantLib option type (ql.Option.Call or ql.Option.Put). The function raises an error if the input is
+    invalid or not supported.
+
+    :param option_type: The input option type, either as an OptionType enum value or a string.
+    :type option_type: Union[str, OptionType]
+    :return: The corresponding QuantLib option type (ql.Option.Call or ql.Option.Put).
+    :rtype: ql.Option
+    :raises ValueError: If the input option type is invalid or not supported.
+    :raises TypeError: If the input type is not a valid OptionType enum value or a string.
+
+    Example usage:
+
+    >>> convert_option_type_to_ql(OptionType.CALL)
+    <OptionType.Call: 1>
+    >>> convert_option_type_to_ql('put')
+    <OptionType.Put: -1>
+    """
     if isinstance(option_type, str):
         option_type = option_type.upper()
         if option_type not in OptionType.__members__:
@@ -29,7 +50,8 @@ def convert_option_type_to_ql(option_type: Union[str, OptionType]) -> ql.Option:
         else:
             raise ValueError(f"Invalid option type \"{option_type}\"")
     else:
-        raise TypeError(f"Invalid input type {type(option_type)} for option type")
+        raise TypeError(
+            f"Invalid input type {type(option_type)} for option type")
 
 
 class OptionTypeField(fields.Field):

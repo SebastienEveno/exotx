@@ -35,7 +35,23 @@ class BarrierOptionEngine(Enum):
 
 
 class BarrierOption(Instrument):
-    """Class for modeling a barrier option."""
+    """
+    BarrierOption is a class representing a barrier option financial instrument.
+
+    The BarrierOption class provides methods for pricing and analyzing barrier options using various models
+    and pricing engines from the QuantLib library.
+
+    Attributes:
+        barrier_type (BarrierType): The barrier type (Up-and-In, Up-and-Out, Down-and-In, or Down-and-Out).
+        barrier (float): The barrier level.
+        strike (float): The strike price of the option.
+        maturity (ql.Date): The maturity date of the option.
+        exercise (ExerciseType): The exercise style (European or American).
+        option_type (OptionType): The option type (Call or Put).
+        rebate (float): The rebate amount.
+        reference_date (ql.Date): The reference date used for pricing the option.
+        model (str): The pricing model used for the option.
+    """
 
     def __init__(self,
                  barrier_type: str,
@@ -56,6 +72,18 @@ class BarrierOption(Instrument):
         self.model = None
 
     def price(self, market_data: MarketData, static_data: StaticData, model: str):
+        """
+        Calculates the price of the barrier option using the given market data, static data, and model.
+
+        :param market_data: The market data used for pricing the option.
+        :type market_data: MarketData
+        :param static_data: The static data used for pricing the option.
+        :type static_data: StaticData
+        :param model: The pricing model used for the option.
+        :type model: str
+        :return: The net present value (NPV) of the option.
+        :rtype: float
+        """
         self.reference_date: ql.Date = market_data.get_ql_reference_date()
         ql.Settings.instance().evaluationDate = self.reference_date
 
@@ -63,10 +91,12 @@ class BarrierOption(Instrument):
         ql_barrier_type = self._get_ql_barrier_type()
         ql_payoff = self._get_ql_payoff()
         ql_exercise = self._get_ql_exercise()
-        ql_option = ql.BarrierOption(ql_barrier_type, self.barrier, self.rebate, ql_payoff, ql_exercise)
+        ql_option = ql.BarrierOption(
+            ql_barrier_type, self.barrier, self.rebate, ql_payoff, ql_exercise)
 
         # set pricing engine
-        ql_pricing_engine = self._get_ql_pricing_engine(market_data, static_data, model)
+        ql_pricing_engine = self._get_ql_pricing_engine(
+            market_data, static_data, model)
         ql_option.setPricingEngine(ql_pricing_engine)
 
         return ql_option.NPV()

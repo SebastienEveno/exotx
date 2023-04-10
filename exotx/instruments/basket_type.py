@@ -12,6 +12,23 @@ class BasketType(Enum):
 
 
 def convert_basket_type(basket_type: Union[str, BasketType]) -> BasketType:
+    """
+    Converts the input basket_type to a BasketType enumeration value.
+
+    :param basket_type: A string or BasketType instance representing the basket type.
+    :type basket_type: Union[str, BasketType]
+    :return: The corresponding BasketType enumeration value.
+    :rtype: BasketType
+    :raises ValueError: If the input string is not a valid BasketType member.
+    :raises Exception: If the input is neither a string nor a BasketType instance.
+
+    Example usage:
+
+    >>> convert_basket_type("minbasket")
+    <BasketType.MINBASKET: 1>
+    >>> convert_basket_type(BasketType.MINBASKET)
+    <BasketType.MINBASKET: 1>
+    """
     if isinstance(basket_type, str):
         basket_type = basket_type.upper()
         if basket_type not in BasketType.__members__:
