@@ -11,6 +11,27 @@ class AverageType(Enum):
 
 
 def convert_average_type_to_ql(average_type: Union[str, AverageType]):
+    """
+    Converts an AverageType enum value or a string representing an average type to the corresponding QuantLib average type.
+
+    This function takes an input average_type, which can be either an AverageType enum value or a string, and returns the
+    corresponding QuantLib average type (ql.Average().Arithmetic or ql.Average().Geometric). The function raises an error 
+    if the input is invalid or not supported.
+
+    :param average_type: The input average type, either as an AverageType enum value or a string.
+    :type average_type: Union[str, AverageType]
+    :return: The corresponding QuantLib average type (ql.Average().Arithmetic or ql.Average().Geometric).
+    :rtype: ql.Average
+    :raises ValueError: If the input average type is invalid or not supported.
+    :raises TypeError: If the input type is not a valid AverageType enum value or a string.
+
+    Example usage:
+
+    >>> convert_average_type_to_ql(AverageType.ARITHMETIC)
+    <AverageType.Arithmetic: 0>
+    >>> convert_average_type_to_ql('geometric')
+    <AverageType.Geometric: 1>
+    """
     if isinstance(average_type, str):
         average_type = average_type.upper()
         if average_type not in AverageType.__members__:
@@ -25,7 +46,8 @@ def convert_average_type_to_ql(average_type: Union[str, AverageType]):
         else:
             raise ValueError(f"Invalid average type \"{average_type}\"")
     else:
-        raise TypeError(f"Invalid input type {type(average_type)} for average type")
+        raise TypeError(
+            f"Invalid input type {type(average_type)} for average type")
 
 
 class AverageTypeField(fields.Field):
