@@ -88,12 +88,33 @@ my_market_data = exotx.MarketData.from_json(my_json)
 
 ### Price the product
 
+#### Vanilla Option
+```python
+from exotx.instruments import OptionType
+from exotx.enums import PricingModel, NumericalMethod
+
+strike = 90
+option_maturity = '2016-05-04'
+my_vanilla_option = exotx.VanillaOption(strike, option_maturity, OptionType.CALL)
+my_pricing_config = exotx.PricingConfiguration(PricingModel.BLACK_SCHOLES, NumericalMethod.ANALYTIC, compute_greeks=True)
+exotx.price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config)
+```
+```plaintext
+>>> { 
+    'price': 13.83328710, 
+    'delta': 0.77183751, 
+    'gamma': 0.01609460, 
+    'theta': -7.01024983
+}
+```
+
+#### Auto-Callable
 ```python
 exotx.price(my_autocallable, my_market_data, my_static_data, model='black-scholes')
 ```
 
 ```plaintext
-96.08517973497098
+>>> 96.08517973497098
 ```
 
 ## Contributing
