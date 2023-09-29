@@ -26,16 +26,26 @@ pip install exotx
 
 ### Define the product
 
+#### Vanilla Option
+
 ```python
 import exotx
+from exotx.instruments import OptionType
 
+strike = 90
+option_maturity = '2016-05-04'
+my_vanilla_option = exotx.VanillaOption(strike, option_maturity, OptionType.CALL)
+```
+
+#### Auto-Callable
+
+```python
 notional = 100
 strike = 100.0
 autocall_barrier_level = 1.0  # 100%
 annual_coupon_value = 0.03  # 3.00%
 coupon_barrier_level = 0.75  # 75%
 protection_barrier_level = 0.75  # 75%
-
 my_autocallable = exotx.Autocallable(notional, strike, autocall_barrier_level, annual_coupon_value, coupon_barrier_level, protection_barrier_level)
 ```
 
@@ -90,12 +100,8 @@ my_market_data = exotx.MarketData.from_json(my_json)
 
 #### Vanilla Option
 ```python
-from exotx.instruments import OptionType
 from exotx.enums import PricingModel, NumericalMethod
 
-strike = 90
-option_maturity = '2016-05-04'
-my_vanilla_option = exotx.VanillaOption(strike, option_maturity, OptionType.CALL)
 my_pricing_config = exotx.PricingConfiguration(PricingModel.BLACK_SCHOLES, NumericalMethod.ANALYTIC, compute_greeks=True)
 exotx.price(my_vanilla_option, my_market_data, my_static_data, my_pricing_config)
 ```
